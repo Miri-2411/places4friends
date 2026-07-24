@@ -26,7 +26,7 @@ export default function AgbPage() {
           <Scale className="h-8 w-8 text-brand-green-700 shrink-0" />
           <div>
             <h2 className="font-bold text-slate-800">Nutzungsbedingungen</h2>
-            <p className="text-xs text-slate-500">Stand: Juni 2026</p>
+            <p className="text-xs text-slate-500">Stand: Juli 2026</p>
           </div>
         </div>
 
@@ -71,12 +71,26 @@ export default function AgbPage() {
           <h3 className="text-base font-bold text-slate-900">4. Nutzungspflichten</h3>
           <p>Sie verpflichten sich, die App nicht zu missbrauchen. Insbesondere ist untersagt:</p>
           <ul className="list-disc pl-5 space-y-1 text-xs">
-            <li>rechtswidrige, beleidigende, diskriminierende oder irreführende Inhalte zu veröffentlichen</li>
+            <li>
+              pornografische, sexuell explizite oder jugendgefährdende Inhalte zu veröffentlichen; die Darstellung
+              sexuellen Missbrauchs von Minderjährigen ist absolut verboten und wird den zuständigen Behörden gemeldet
+            </li>
+            <li>
+              rassistische, volksverhetzende, gewaltverherrlichende, extremistische oder zu Hass, Diskriminierung oder
+              Gewalt gegen Personen oder Gruppen aufstachelnde Inhalte zu veröffentlichen
+            </li>
+            <li>andere Nutzer zu belästigen, zu bedrohen, zu mobben, bloßzustellen oder zu diskriminieren</li>
+            <li>sonstige rechtswidrige, beleidigende oder irreführende Inhalte zu veröffentlichen</li>
             <li>Rechte Dritter (z. B. Urheber-, Marken- oder Persönlichkeitsrechte) zu verletzen</li>
             <li>die technische Infrastruktur zu stören, auszuspähen oder unbefugt zuzugreifen</li>
             <li>automatisierte Abfragen (Scraping) ohne unsere Zustimmung durchzuführen</li>
             <li>die App für kommerzielle Werbung ohne vorherige Absprache zu nutzen</li>
           </ul>
+          <p>
+            Für rechtswidrige oder anstößige Inhalte sowie für belästigendes Verhalten gegenüber anderen Nutzern gilt
+            eine Null-Toleranz-Politik. Derartige Inhalte werden entfernt und die verantwortlichen Konten können ohne
+            Vorankündigung gesperrt oder gelöscht werden.
+          </p>
         </section>
 
         <section className="space-y-2">
@@ -95,7 +109,30 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">6. Freundschaften und Einladungslinks</h3>
+          <h3 className="text-base font-bold text-slate-900">6. Moderation, Meldungen und Zugriff durch den Betreiber</h3>
+          <p>
+            Nutzer können Inhalte und andere Nutzer über die in der App bereitgestellte Melde- und Blockierfunktion
+            melden bzw. blockieren. Wir prüfen eingehende Meldungen und bemühen uns um eine zeitnahe Bearbeitung;
+            rechtswidrige oder gegen diese Bedingungen verstoßende Inhalte werden entfernt.
+          </p>
+          <p>
+            Zu Moderations- und Sicherheitszwecken kann der Betreiber in seiner Funktion als Administrator auf sämtliche
+            in der App eingestellten Inhalte zugreifen – einschließlich solcher, die nur für einen begrenzten
+            Empfängerkreis (z. B. Freunde) sichtbar sind. Dieser Zugriff erfolgt ausschließlich zur Prüfung von
+            Meldungen, zur Durchsetzung dieser Nutzungsbedingungen sowie zur Erfüllung gesetzlicher Pflichten und bleibt
+            auf das hierfür erforderliche Maß beschränkt.
+          </p>
+          <p>
+            Einzelheiten zur Verarbeitung personenbezogener Daten in diesem Zusammenhang finden Sie in unserer{" "}
+            <Link href="/datenschutz" className="text-brand-green-700 hover:underline">
+              Datenschutzerklärung
+            </Link>
+            .
+          </p>
+        </section>
+
+        <section className="space-y-2">
+          <h3 className="text-base font-bold text-slate-900">7. Freundschaften und Einladungslinks</h3>
           <p>
             Freundschaftsverbindungen entstehen durch Anfragen oder über persönliche Einladungslinks. Einladungslinks sind
             persönlich und nicht zur öffentlichen Verbreitung in Massenmedien bestimmt. Sie haften für den missbräuchlichen
@@ -104,7 +141,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">7. Verfügbarkeit</h3>
+          <h3 className="text-base font-bold text-slate-900">8. Verfügbarkeit</h3>
           <p>
             Wir bemühen uns um eine hohe Verfügbarkeit, garantieren diese jedoch nicht. Wartung, Updates oder Störungen bei
             Drittanbietern (z. B. Hosting, Karten) können zu vorübergehenden Einschränkungen führen. Die App kann sich noch in
@@ -113,7 +150,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">8. Haftung und externe Dienste</h3>
+          <h3 className="text-base font-bold text-slate-900">9. Haftung und externe Dienste</h3>
           <p>
             Wir haften unbeschränkt bei Vorsatz und grober Fahrlässigkeit sowie bei Schäden aus der Verletzung von Leben,
             Körper oder Gesundheit. Im Übrigen haften wir nur bei Verletzung wesentlicher Vertragspflichten, beschränkt auf den
@@ -128,7 +165,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">9. Kündigung</h3>
+          <h3 className="text-base font-bold text-slate-900">10. Kündigung</h3>
           <p>
             Sie können Ihr Konto jederzeit in den Einstellungen unter „Konto löschen“ unwiderruflich beenden. Wir können Konten
             bei schwerwiegenden Verstößen gegen diese Bedingungen sperren oder löschen. Mit Kontolöschung endet Ihr Nutzungsrecht.
@@ -136,7 +173,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">10. Änderungen</h3>
+          <h3 className="text-base font-bold text-slate-900">11. Änderungen</h3>
           <p>
             Wir können diese Nutzungsbedingungen anpassen, wenn sachliche Gründe dies erfordern (z. B. neue Funktionen,
             Rechtsänderungen). Über wesentliche Änderungen informieren wir in der App oder per E-Mail. Widersprechen Sie nicht
@@ -146,7 +183,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">11. Schlussbestimmungen</h3>
+          <h3 className="text-base font-bold text-slate-900">12. Schlussbestimmungen</h3>
           <p>
             Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts. Für Verbraucher gilt diese
             Rechtswahl nur, soweit dadurch keine zwingenden Verbraucherschutzvorschriften des Staates ihres gewöhnlichen

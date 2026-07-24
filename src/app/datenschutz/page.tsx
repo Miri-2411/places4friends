@@ -26,7 +26,7 @@ export default function DatenschutzPage() {
           <Shield className="h-8 w-8 text-brand-green-700 shrink-0" />
           <div>
             <h2 className="font-bold text-slate-800">Datenschutz bei places4friends</h2>
-            <p className="text-xs text-slate-500">Stand: Juni 2026</p>
+            <p className="text-xs text-slate-500">Stand: Juli 2026</p>
           </div>
         </div>
 
@@ -94,7 +94,31 @@ export default function DatenschutzPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">4. Drittanbieter und Infrastruktur</h3>
+          <h3 className="text-base font-bold text-slate-900">4. Moderation und Zugriff auf Inhalte</h3>
+          <p>
+            Zur Gewährleistung eines sicheren und rechtskonformen Betriebs prüfen wir gemeldete Inhalte und moderieren
+            die in der App eingestellten Beiträge. Nutzer können Inhalte und andere Nutzer über die Melde- und
+            Blockierfunktion melden bzw. blockieren.
+          </p>
+          <p>
+            Der Betreiber kann in seiner Funktion als Administrator technisch auf sämtliche in der App eingestellten
+            Inhalte zugreifen – einschließlich solcher, die nur für einen begrenzten Empfängerkreis (z. B. Freunde)
+            sichtbar sind. Dieser Zugriff erfolgt ausschließlich zu Moderations- und Sicherheitszwecken, insbesondere zur
+            Prüfung von Meldungen, zur Durchsetzung unserer{" "}
+            <Link href="/agb" className="text-brand-green-700 hover:underline">
+              Nutzungsbedingungen
+            </Link>{" "}
+            und zur Erfüllung gesetzlicher Pflichten, und bleibt auf das hierfür erforderliche Maß beschränkt.
+          </p>
+          <p>
+            Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Sicherheit der Plattform und
+            dem Schutz der Nutzer) sowie Art. 6 Abs. 1 lit. c DSGVO (Erfüllung rechtlicher Verpflichtungen, u. a. nach dem
+            Gesetz über digitale Dienste).
+          </p>
+        </section>
+
+        <section className="space-y-2">
+          <h3 className="text-base font-bold text-slate-900">5. Drittanbieter und Infrastruktur</h3>
 
           <h4 className="font-semibold text-slate-800">Vercel (Hosting)</h4>
           <p>
@@ -142,7 +166,7 @@ export default function DatenschutzPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">5. Cookies und lokale Speicherung</h3>
+          <h3 className="text-base font-bold text-slate-900">6. Cookies und lokale Speicherung</h3>
           <p>
             Wir setzen technisch notwendige Session-Cookies ein (Supabase-Authentifizierung), um Sie angemeldet zu halten.
             Darüber hinaus speichern wir in Ihrem Browser lokal (localStorage bzw. sessionStorage) unter anderem:
@@ -161,7 +185,7 @@ export default function DatenschutzPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">6. Speicherdauer</h3>
+          <h3 className="text-base font-bold text-slate-900">7. Speicherdauer</h3>
           <p>
             Personenbezogene Daten speichern wir, solange Ihr Konto besteht. Nach Löschung Ihres Kontos werden Ihre Daten
             gelöscht, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen. IP-basierte Zwischenwerte im
@@ -171,7 +195,7 @@ export default function DatenschutzPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">7. Drittlandübermittlung</h3>
+          <h3 className="text-base font-bold text-slate-900">8. Drittlandübermittlung</h3>
           <p>
             Einige der genannten Anbieter (z. B. Mapbox, Google, Supabase, Vercel, ipapi.co) haben ihren Sitz in den USA
             oder verarbeiten Daten auch dort. Für Übermittlungen in Drittländer setzen wir geeignete Garantien ein, insbesondere
@@ -181,7 +205,7 @@ export default function DatenschutzPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">8. Ihre Rechte</h3>
+          <h3 className="text-base font-bold text-slate-900">9. Ihre Rechte</h3>
           <p>Sie haben im Rahmen der DSGVO folgende Rechte:</p>
           <ul className="list-disc pl-5 space-y-1 text-xs">
             <li>Auskunft (Art. 15 DSGVO)</li>
