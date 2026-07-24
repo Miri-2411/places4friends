@@ -4,6 +4,7 @@ import {
   CheckCircle2,
   Clock,
   Home,
+  Smartphone,
   XCircle,
   type LucideIcon,
 } from "lucide-react";
@@ -83,15 +84,35 @@ export default async function VerifyEmailPage({
         {message}
       </p>
 
-      <div className="mt-8 w-full max-w-[240px]">
+      <div className="mt-8 w-full max-w-[240px] flex flex-col gap-3">
+        {/*
+          Back into the app via its custom scheme. Not a universal link: the mail
+          points at the Supabase Edge Function, which 302s here, and a redirect
+          target never triggers universal-link handling — so only the scheme can
+          hand the user back. Nothing happens if the app isn't installed, hence
+          the web link below it as the always-working option.
+        */}
+        <a
+          href="places4friendsmobileapp://"
+          className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-green-700 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-green-900/10 transition-all hover:bg-brand-green-800 active:scale-[0.98]"
+        >
+          <Smartphone className="h-4 w-4" />
+          In der App öffnen
+        </a>
         <Link
           href="/"
-          className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-green-700 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-green-900/10 transition-all hover:bg-brand-green-800 active:scale-[0.98]"
+          className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 active:scale-[0.98]"
         >
           <Home className="h-4 w-4" />
           Zurück zur Karte
         </Link>
       </div>
+
+      {ok ? (
+        <p className="mt-5 max-w-[280px] text-xs leading-relaxed text-slate-400">
+          Der Haken erscheint in der App, sobald du sie das nächste Mal öffnest.
+        </p>
+      ) : null}
     </div>
   );
 }
