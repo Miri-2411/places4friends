@@ -4,6 +4,7 @@ import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
 import StorageNotice from "@/components/StorageNotice";
+import AppPromoModal from "@/components/AppPromoModal";
 import AuthProvider from "@/components/auth/AuthProvider";
 
 const inter = Inter({
@@ -83,6 +84,7 @@ export default function RootLayout({
             </main>
 
             <OnboardingOverlay />
+            <AppPromoModal />
             <StorageNotice />
 
             {/* Persistent Navigation Bar */}

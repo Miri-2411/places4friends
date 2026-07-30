@@ -42,11 +42,10 @@ import { applyMapLabelLanguage, MAP_LABEL_LANGUAGE } from "@/lib/mapLanguage";
 import Toast from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import {
-  STORAGE_NOTICE_DISMISSED_KEY,
-  STORAGE_NOTICE_REQUEST_LAYOUT_EVENT,
-  STORAGE_NOTICE_STACK_GAP_PX,
-  STORAGE_NOTICE_VISIBILITY_EVENT,
-} from "@/components/StorageNotice";
+  BOTTOM_STACK_BASE_OFFSET,
+  useBottomStackLayer,
+  useBottomStackOffset,
+} from "@/lib/bottomStack";
 
 interface UserProfile {
   id: string;
@@ -99,6 +98,10 @@ const MAP_STYLES = [
 
 // Pin markers are h-10/w-10 (40px); cluster when circle centers would overlap.
 const MARKER_DIAMETER_PX = 40;
+
+// The map container ends 16px above the layout bottom (main has pb-4), while the
+// shared bottom stack measures from the layout bottom.
+const MAP_BOTTOM_INSET_PX = 16;
 
 // Pins use anchor="center"; tip should meet the top edge of the 40px circle.
 const POPUP_TIP_GAP_PX = 2;
@@ -378,7 +381,9 @@ export default function MapViewContent() {
   const [locationToast, setLocationToast] = useState<string | null>(null);
   const [noPlacesToast, setNoPlacesToast] = useState<string | null>(null);
   const [commentDeleteConfirmId, setCommentDeleteConfirmId] = useState<string | null>(null);
-  const [storageNoticeLiftPx, setStorageNoticeLiftPx] = useState(0);
+  const showLoginPrompt = !isSessionLoading && !user;
+  const loginPromptRef = useBottomStackLayer("loginPrompt", showLoginPrompt);
+  const loginPromptOffsetPx = useBottomStackOffset("loginPrompt");
   const [comments, setComments] = useState<ActivityComment[]>([]);
   const [commentInput, setCommentInput] = useState("");
   const [commentError, setCommentError] = useState<string | null>(null);
@@ -690,49 +695,6 @@ export default function MapViewContent() {
     const map = mapRef.current?.getMap?.();
     applyMapLabelLanguage(map);
   }, [currentStyle]);
-
-  useEffect(() => {
-    const updateVisibilityFromStorage = () => {
-      try {
-        const dismissed = globalThis.localStorage?.getItem(STORAGE_NOTICE_DISMISSED_KEY);
-        if (dismissed) {
-          setStorageNoticeLiftPx(0);
-        }
-      } catch {
-        // StorageNotice will report layout on mount
-      }
-    };
-
-    updateVisibilityFromStorage();
-
-    const handleNoticeVisibility = (event: Event) => {
-      const customEvent = event as CustomEvent<{ visible?: boolean; height?: number }>;
-      const visible = Boolean(customEvent.detail?.visible);
-      const height = customEvent.detail?.height ?? 0;
-      // main has pb-4; map bottom sits 16px above layout bottom (same anchor as StorageNotice)
-      const mainBottomPaddingPx = 16;
-      setStorageNoticeLiftPx(
-        visible && height > 0
-          ? height + STORAGE_NOTICE_STACK_GAP_PX - mainBottomPaddingPx
-          : 0
-      );
-    };
-
-    const requestNoticeLayout = () => {
-      window.dispatchEvent(new CustomEvent(STORAGE_NOTICE_REQUEST_LAYOUT_EVENT));
-    };
-
-    window.addEventListener(STORAGE_NOTICE_VISIBILITY_EVENT, handleNoticeVisibility);
-    requestNoticeLayout();
-    return () => {
-      window.removeEventListener(STORAGE_NOTICE_VISIBILITY_EVENT, handleNoticeVisibility);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isSessionLoading || user) return;
-    window.dispatchEvent(new CustomEvent(STORAGE_NOTICE_REQUEST_LAYOUT_EVENT));
-  }, [isSessionLoading, user]);
 
   const handleMoveEnd = useCallback(() => {
     void fetchViewportPins();
@@ -2207,14 +2169,17 @@ export default function MapViewContent() {
       </div>
 
       {/* Floating Login/Register Prompt Modal at the bottom when logged out */}
-      {!isSessionLoading && !user && (
+      {showLoginPrompt && (
         <div
+          ref={loginPromptRef}
           className="absolute left-4 right-4 z-20 bg-white/95 p-5 rounded-2xl shadow-2xl backdrop-blur-md flex flex-col gap-3 transition-all duration-300"
           style={{
-            bottom:
-              storageNoticeLiftPx > 0
-                ? `calc(64px + 8px + env(safe-area-inset-bottom) + ${storageNoticeLiftPx}px)`
-                : "calc(64px + 8px + env(safe-area-inset-bottom))",
+            // The map bottom sits 16px above the layout bottom (main has pb-4),
+            // which the shared stack offset has to account for.
+            bottom: `calc(${BOTTOM_STACK_BASE_OFFSET} + ${Math.max(
+              loginPromptOffsetPx - MAP_BOTTOM_INSET_PX,
+              0
+            )}px)`,
           }}
         >
           <div>
