@@ -9,45 +9,19 @@ import {
   useBottomStackLayer,
   useBottomStackOffset,
 } from "@/lib/bottomStack";
+import {
+  APP_STORE_URL,
+  PLAY_STORE_URL,
+  detectPlatform,
+  isInAppBrowser,
+  openPlayStoreApp,
+  type Platform,
+} from "@/lib/appStores";
 
 export const APP_PROMO_DISMISSED_KEY = "p4f_app_promo_dismissed";
 
-const IOS_WEB_URL = "https://apps.apple.com/de/app/places4friends/id6785068552";
-const ANDROID_WEB_URL = "https://play.google.com/store/apps/details?id=com.janickbraun.places4friends";
-const ANDROID_NATIVE_URL = "market://details?id=com.janickbraun.places4friends";
-const ANDROID_INTENT_URL =
-  "intent://details?id=com.janickbraun.places4friends#Intent;scheme=market;package=com.android.vending;end";
-
-/** Time we give the Play Store app to take over before falling back to the web link. */
-const NATIVE_FALLBACK_MS = 900;
-
-/** Legal pages stay free of the promo. */
-const HIDDEN_PATHS = ["/impressum", "/datenschutz", "/agb"];
-
-type Platform = "ios" | "android" | "other";
-
-function detectPlatform(): Platform {
-  if (typeof navigator === "undefined") return "other";
-  const ua = navigator.userAgent;
-  if (/android/i.test(ua)) return "android";
-  // iPadOS 13+ reports a desktop Safari UA, so check for touch support as well.
-  if (/iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) {
-    return "ios";
-  }
-  return "other";
-}
-
-/**
- * In-app browsers (Instagram, Facebook, TikTok, ...) silently swallow
- * target="_blank" and custom URL schemes, so links have to navigate the
- * current view instead.
- */
-function isInAppBrowser(): boolean {
-  if (typeof navigator === "undefined") return false;
-  return /Instagram|FBAN|FBAV|FB_IAB|FBIOS|Messenger|TikTok|BytedanceWebview|Snapchat|Twitter|LinkedInApp|Pinterest|Line\//i.test(
-    navigator.userAgent
-  );
-}
+/** Legal pages and the store hand-off page stay free of the promo. */
+const HIDDEN_PATHS = ["/impressum", "/datenschutz", "/agb", "/download"];
 
 export default function AppPromoModal() {
   const [dismissed, setDismissed] = useState(true);
@@ -85,47 +59,14 @@ export default function AppPromoModal() {
   }, []);
 
   /**
-   * On Android we first try to hand the click to the Play Store app and fall
-   * back to the web link if nothing took over. The App Store button stays a
-   * plain link.
-   *
-   * Regular browsers resolve market:// directly. In-app browsers (Instagram,
-   * Facebook, ...) need the intent:// syntax, and it has to be attempted from
-   * a hidden iframe: a webview that cannot resolve the scheme keeps its error
-   * inside the frame instead of replacing the page with an error screen.
+   * On Android the click is handed to the Play Store app, with the web link as
+   * fallback. The App Store button stays a plain link. In-app browsers go
+   * through /download, where a real tap on the store scheme can reach the OS.
    */
   const openPlayStore = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (platform !== "android") return;
-
+    if (platform !== "android" || inAppBrowser) return;
     event.preventDefault();
-
-    let fallbackTimer = 0;
-    let frame: HTMLIFrameElement | null = null;
-
-    const cleanUp = () => {
-      window.clearTimeout(fallbackTimer);
-      frame?.remove();
-    };
-
-    fallbackTimer = window.setTimeout(() => {
-      window.removeEventListener("pagehide", cleanUp);
-      frame?.remove();
-      if (document.visibilityState === "visible") {
-        window.location.href = ANDROID_WEB_URL;
-      }
-    }, NATIVE_FALLBACK_MS);
-
-    window.addEventListener("pagehide", cleanUp, { once: true });
-
-    if (inAppBrowser) {
-      frame = document.createElement("iframe");
-      frame.style.display = "none";
-      frame.src = ANDROID_INTENT_URL;
-      document.body.appendChild(frame);
-      return;
-    }
-
-    window.location.href = ANDROID_NATIVE_URL;
+    openPlayStoreApp(false);
   };
 
   if (!visible) return null;
@@ -135,6 +76,10 @@ export default function AppPromoModal() {
   // Only real desktop browsers get a new tab; phones and in-app browsers either
   // ignore it or drop the click entirely.
   const opensInNewTab = platform === "other" && !inAppBrowser;
+  // In-app browsers suppress the store hand-off, so they take the detour over
+  // the /download page instead of linking to the store site directly.
+  const appStoreHref = inAppBrowser ? "/download" : APP_STORE_URL;
+  const playStoreHref = inAppBrowser ? "/download" : PLAY_STORE_URL;
   const buttonBase =
     "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-[0.98]";
   const primaryButton = "bg-brand-green-700 hover:bg-brand-green-800 text-white";
@@ -180,7 +125,7 @@ export default function AppPromoModal() {
 
       <div className="flex gap-2">
         <a
-          href={IOS_WEB_URL}
+          href={appStoreHref}
           target={opensInNewTab ? "_blank" : undefined}
           rel={opensInNewTab ? "noopener noreferrer" : undefined}
           className={`${buttonBase} ${primaryTarget === "ios" ? primaryButton : secondaryButton}`}
@@ -189,7 +134,7 @@ export default function AppPromoModal() {
           App Store
         </a>
         <a
-          href={ANDROID_WEB_URL}
+          href={playStoreHref}
           onClick={openPlayStore}
           target={opensInNewTab ? "_blank" : undefined}
           rel={opensInNewTab ? "noopener noreferrer" : undefined}

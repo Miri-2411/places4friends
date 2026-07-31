@@ -193,6 +193,9 @@ export default function BottomNav() {
     return pathname.startsWith(path);
   };
 
+  // The store hand-off page is a landing page, not part of the app shell.
+  const isHidden = pathname === "/download";
+
   const getTabClass = (path: string) => {
     const active = isTabActive(path);
     return `flex flex-col items-center justify-center gap-1 w-16 py-2 rounded-xl transition-all duration-200 ${
@@ -201,6 +204,8 @@ export default function BottomNav() {
         : "text-slate-400 hover:text-slate-600 active:scale-95"
     }`;
   };
+
+  if (isHidden) return null;
 
   return (
     <nav className="absolute bottom-0 left-0 right-0 z-50 w-full border-t border-slate-100 bg-white/90 pb-safe-bottom shadow-[0_-4px_24px_rgba(0,0,0,0.04)] backdrop-blur-md">
