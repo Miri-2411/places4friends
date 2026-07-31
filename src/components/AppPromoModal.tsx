@@ -13,11 +13,10 @@ import {
 export const APP_PROMO_DISMISSED_KEY = "p4f_app_promo_dismissed";
 
 const IOS_WEB_URL = "https://apps.apple.com/de/app/places4friends/id6785068552";
-const IOS_NATIVE_URL = "itms-apps://apps.apple.com/de/app/places4friends/id6785068552";
 const ANDROID_WEB_URL = "https://play.google.com/store/apps/details?id=com.janickbraun.places4friends";
 const ANDROID_NATIVE_URL = "market://details?id=com.janickbraun.places4friends";
 
-/** Time we give the native store app to take over before falling back to the web link. */
+/** Time we give the Play Store app to take over before falling back to the web link. */
 const NATIVE_FALLBACK_MS = 900;
 
 /** Legal pages stay free of the promo. */
@@ -70,16 +69,14 @@ export default function AppPromoModal() {
   }, []);
 
   /**
-   * On the matching mobile platform we first try the native store scheme so the
-   * App Store / Play Store app opens directly, and fall back to the web link
-   * if nothing took over.
+   * On Android we first try the native market:// scheme so the Play Store app
+   * opens directly, and fall back to the web link if nothing took over.
+   * The App Store button is a plain link.
    */
-  const openStore = (target: "ios" | "android") => (event: MouseEvent<HTMLAnchorElement>) => {
-    if (platform !== target) return;
+  const openPlayStore = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (platform !== "android") return;
 
     event.preventDefault();
-    const nativeUrl = target === "ios" ? IOS_NATIVE_URL : ANDROID_NATIVE_URL;
-    const webUrl = target === "ios" ? IOS_WEB_URL : ANDROID_WEB_URL;
 
     let fallbackTimer = 0;
     const cancelFallback = () => window.clearTimeout(fallbackTimer);
@@ -87,12 +84,12 @@ export default function AppPromoModal() {
     fallbackTimer = window.setTimeout(() => {
       window.removeEventListener("pagehide", cancelFallback);
       if (document.visibilityState === "visible") {
-        window.location.href = webUrl;
+        window.location.href = ANDROID_WEB_URL;
       }
     }, NATIVE_FALLBACK_MS);
 
     window.addEventListener("pagehide", cancelFallback, { once: true });
-    window.location.href = nativeUrl;
+    window.location.href = ANDROID_NATIVE_URL;
   };
 
   if (!visible) return null;
@@ -145,7 +142,6 @@ export default function AppPromoModal() {
       <div className="flex gap-2">
         <a
           href={IOS_WEB_URL}
-          onClick={openStore("ios")}
           target={platform === "ios" ? undefined : "_blank"}
           rel="noopener noreferrer"
           className={`${buttonBase} ${primaryTarget === "ios" ? primaryButton : secondaryButton}`}
@@ -155,7 +151,7 @@ export default function AppPromoModal() {
         </a>
         <a
           href={ANDROID_WEB_URL}
-          onClick={openStore("android")}
+          onClick={openPlayStore}
           target={platform === "android" ? undefined : "_blank"}
           rel="noopener noreferrer"
           className={`${buttonBase} ${primaryTarget === "android" ? primaryButton : secondaryButton}`}
