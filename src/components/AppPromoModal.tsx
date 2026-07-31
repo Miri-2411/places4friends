@@ -35,9 +35,22 @@ function detectPlatform(): Platform {
   return "other";
 }
 
+/**
+ * In-app browsers (Instagram, Facebook, TikTok, ...) silently swallow
+ * target="_blank" and custom URL schemes, so links have to navigate the
+ * current view instead.
+ */
+function isInAppBrowser(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /Instagram|FBAN|FBAV|FB_IAB|FBIOS|Messenger|TikTok|BytedanceWebview|Snapchat|Twitter|LinkedInApp|Pinterest|Line\//i.test(
+    navigator.userAgent
+  );
+}
+
 export default function AppPromoModal() {
   const [dismissed, setDismissed] = useState(true);
   const [platform, setPlatform] = useState<Platform>("other");
+  const [inAppBrowser, setInAppBrowser] = useState(false);
   const pathname = usePathname();
 
   const isHiddenPath = HIDDEN_PATHS.some(
@@ -50,6 +63,7 @@ export default function AppPromoModal() {
 
   useEffect(() => {
     setPlatform(detectPlatform());
+    setInAppBrowser(isInAppBrowser());
     try {
       if (!globalThis.localStorage?.getItem(APP_PROMO_DISMISSED_KEY)) {
         setDismissed(false);
@@ -71,10 +85,11 @@ export default function AppPromoModal() {
   /**
    * On Android we first try the native market:// scheme so the Play Store app
    * opens directly, and fall back to the web link if nothing took over.
-   * The App Store button is a plain link.
+   * In-app browsers cannot resolve the scheme and would land on an error page,
+   * so they get the plain link. The App Store button is always a plain link.
    */
   const openPlayStore = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (platform !== "android") return;
+    if (platform !== "android" || inAppBrowser) return;
 
     event.preventDefault();
 
@@ -96,6 +111,9 @@ export default function AppPromoModal() {
 
   // Android devices get Google Play as the primary action, everyone else Apple.
   const primaryTarget: "ios" | "android" = platform === "android" ? "android" : "ios";
+  // Only real desktop browsers get a new tab; phones and in-app browsers either
+  // ignore it or drop the click entirely.
+  const opensInNewTab = platform === "other" && !inAppBrowser;
   const buttonBase =
     "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-[0.98]";
   const primaryButton = "bg-brand-green-700 hover:bg-brand-green-800 text-white";
@@ -142,8 +160,8 @@ export default function AppPromoModal() {
       <div className="flex gap-2">
         <a
           href={IOS_WEB_URL}
-          target={platform === "ios" ? undefined : "_blank"}
-          rel="noopener noreferrer"
+          target={opensInNewTab ? "_blank" : undefined}
+          rel={opensInNewTab ? "noopener noreferrer" : undefined}
           className={`${buttonBase} ${primaryTarget === "ios" ? primaryButton : secondaryButton}`}
         >
           <AppleIcon className="h-4 w-4" />
@@ -152,8 +170,8 @@ export default function AppPromoModal() {
         <a
           href={ANDROID_WEB_URL}
           onClick={openPlayStore}
-          target={platform === "android" ? undefined : "_blank"}
-          rel="noopener noreferrer"
+          target={opensInNewTab ? "_blank" : undefined}
+          rel={opensInNewTab ? "noopener noreferrer" : undefined}
           className={`${buttonBase} ${primaryTarget === "android" ? primaryButton : secondaryButton}`}
         >
           <GooglePlayIcon className="h-4 w-4" />
