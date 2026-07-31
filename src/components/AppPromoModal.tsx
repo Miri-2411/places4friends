@@ -15,6 +15,8 @@ export const APP_PROMO_DISMISSED_KEY = "p4f_app_promo_dismissed";
 const IOS_WEB_URL = "https://apps.apple.com/de/app/places4friends/id6785068552";
 const ANDROID_WEB_URL = "https://play.google.com/store/apps/details?id=com.janickbraun.places4friends";
 const ANDROID_NATIVE_URL = "market://details?id=com.janickbraun.places4friends";
+const ANDROID_INTENT_URL =
+  "intent://details?id=com.janickbraun.places4friends#Intent;scheme=market;package=com.android.vending;end";
 
 /** Time we give the Play Store app to take over before falling back to the web link. */
 const NATIVE_FALLBACK_MS = 900;
@@ -83,27 +85,46 @@ export default function AppPromoModal() {
   }, []);
 
   /**
-   * On Android we first try the native market:// scheme so the Play Store app
-   * opens directly, and fall back to the web link if nothing took over.
-   * In-app browsers cannot resolve the scheme and would land on an error page,
-   * so they get the plain link. The App Store button is always a plain link.
+   * On Android we first try to hand the click to the Play Store app and fall
+   * back to the web link if nothing took over. The App Store button stays a
+   * plain link.
+   *
+   * Regular browsers resolve market:// directly. In-app browsers (Instagram,
+   * Facebook, ...) need the intent:// syntax, and it has to be attempted from
+   * a hidden iframe: a webview that cannot resolve the scheme keeps its error
+   * inside the frame instead of replacing the page with an error screen.
    */
   const openPlayStore = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (platform !== "android" || inAppBrowser) return;
+    if (platform !== "android") return;
 
     event.preventDefault();
 
     let fallbackTimer = 0;
-    const cancelFallback = () => window.clearTimeout(fallbackTimer);
+    let frame: HTMLIFrameElement | null = null;
+
+    const cleanUp = () => {
+      window.clearTimeout(fallbackTimer);
+      frame?.remove();
+    };
 
     fallbackTimer = window.setTimeout(() => {
-      window.removeEventListener("pagehide", cancelFallback);
+      window.removeEventListener("pagehide", cleanUp);
+      frame?.remove();
       if (document.visibilityState === "visible") {
         window.location.href = ANDROID_WEB_URL;
       }
     }, NATIVE_FALLBACK_MS);
 
-    window.addEventListener("pagehide", cancelFallback, { once: true });
+    window.addEventListener("pagehide", cleanUp, { once: true });
+
+    if (inAppBrowser) {
+      frame = document.createElement("iframe");
+      frame.style.display = "none";
+      frame.src = ANDROID_INTENT_URL;
+      document.body.appendChild(frame);
+      return;
+    }
+
     window.location.href = ANDROID_NATIVE_URL;
   };
 
