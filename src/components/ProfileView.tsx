@@ -9,9 +9,11 @@ import { authenticatedFetch } from "@/lib/auth/authenticatedFetch";
 import { shareFriendInviteLink } from "@/lib/friendInvite";
 import { signOutClient } from "@/lib/auth/signOutClient";
 import ActivityCard from "./ActivityCard";
+import ActivityPhoto from "@/components/ui/ActivityPhoto";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { buildActivityCountMap } from "@/lib/activityCounts";
 import LegalFooter from "./LegalFooter";
+import { useInfiniteScroll } from "@/lib/useInfiniteScroll";
+import { ActivityCardSkeleton } from "@/components/ui/Skeleton";
 import { getAvatarUrl } from "@/lib/avatar";
 import VerificationBanner from "./VerificationBanner";
 
@@ -33,6 +35,9 @@ interface PlaceItem {
   timestamp: string;
   categories?: string[];
   imageUrls?: string[];
+  mapSnapshotUrl?: string | null;
+  commentCount?: number;
+  saveCount?: number;
 }
 
 interface WishlistItem {
@@ -46,6 +51,9 @@ interface WishlistItem {
   timestamp: string;
   categories?: string[];
   imageUrls?: string[];
+  mapSnapshotUrl?: string | null;
+  commentCount?: number;
+  saveCount?: number;
   friend: {
     id: string;
     name: string;
@@ -87,16 +95,28 @@ const CATEGORY_OPTIONS = [
   "Event",
 ];
 
-export default function ProfileView({ 
-  user, 
+export default function ProfileView({
+  user,
   friendsCount = 0,
   places = [],
-  wishlist = []
-}: { 
-  user?: User; 
+  wishlist = [],
+  hasMorePlaces = false,
+  isLoadingMorePlaces = false,
+  onLoadMorePlaces,
+  hasMoreWishlist = false,
+  isLoadingMoreWishlist = false,
+  onLoadMoreWishlist,
+}: {
+  user?: User;
   friendsCount?: number;
   places?: PlaceItem[];
   wishlist?: WishlistItem[];
+  hasMorePlaces?: boolean;
+  isLoadingMorePlaces?: boolean;
+  onLoadMorePlaces?: () => void;
+  hasMoreWishlist?: boolean;
+  isLoadingMoreWishlist?: boolean;
+  onLoadMoreWishlist?: () => void;
 }) {
   const supabase = createClient();
   const router = useRouter();
@@ -143,6 +163,7 @@ export default function ProfileView({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [commentsByPlace, setCommentsByPlace] = useState<Record<string, ActivityComment[]>>({});
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const [saveCounts, setSaveCounts] = useState<Record<string, number>>({});
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
   const [commentErrors, setCommentErrors] = useState<Record<string, string | null>>({});
@@ -178,6 +199,18 @@ export default function ProfileView({
   useEffect(() => {
     setWishlistItems(wishlist);
   }, [wishlist]);
+
+  // Each tab pulls its own next page, and only the visible one can fire.
+  const placesSentinelRef = useInfiniteScroll<HTMLDivElement>({
+    hasMore: activeTab === "recommendations" && hasMorePlaces,
+    isLoading: isLoadingMorePlaces,
+    onLoadMore: () => onLoadMorePlaces?.(),
+  });
+  const wishlistSentinelRef = useInfiniteScroll<HTMLDivElement>({
+    hasMore: activeTab === "wishlist" && hasMoreWishlist,
+    isLoading: isLoadingMoreWishlist,
+    onLoadMore: () => onLoadMoreWishlist?.(),
+  });
 
 
   useEffect(() => {
@@ -451,96 +484,39 @@ export default function ProfileView({
     }
   };
 
+  /**
+   * The counters come with the rows — `comment_count` and `save_count` are
+   * columns the database maintains. This screen used to fetch every comment
+   * (with its author profile) and every wishlist row for every place and every
+   * saved place, on mount and again after each of those lists changed, purely
+   * to render two numbers. The comment bodies are now loaded per thread, when
+   * one is opened.
+   *
+   * Merged rather than replaced so a locally opened thread's count, and the
+   * optimistic count of a place just un-saved, survive the next page.
+   */
   useEffect(() => {
-    if (!user) {
-      setCommentsByPlace({});
-      setSaveCounts({});
-      return;
-    }
-
-    const activityIds = Array.from(
-      new Set([
-        ...items.map((item) => item.id),
-        ...wishlistItems.map((item) => item.activityId),
-      ])
-    );
-
-    if (activityIds.length === 0) {
-      setCommentsByPlace({});
-      setSaveCounts({});
-      return;
-    }
-
-    let isActive = true;
-
-    const loadComments = async () => {
-      const [{ data, error }, { data: savesData }] = await Promise.all([
-        supabase
-          .from("activity_comments")
-          .select(
-            "id, activity_id, user_id, content, created_at, profiles:profiles!activity_comments_user_id_fkey(id, username, full_name, avatar_url)"
-          )
-          .in("activity_id", activityIds)
-          .order("created_at", { ascending: true }),
-        supabase.from("wishlist").select("activity_id").in("activity_id", activityIds),
-      ]);
-
-      if (!isActive) return;
-
-      if (error) {
-        setCommentsByPlace({});
-        setSaveCounts({});
-        return;
-      }
-
-      setSaveCounts(
-        buildActivityCountMap((savesData || []) as { activity_id: string }[])
-      );
-
-      const grouped: Record<string, ActivityComment[]> = {};
-      (data || []).forEach((row: any) => {
-        const profile = row.profiles;
-        const name = profile?.full_name ?? profile?.username ?? "Nutzer";
-        const initials = name
-          .split(" ")
-          .map((n: string) => n[0])
-          .slice(0, 2)
-          .join("")
-          .toUpperCase() || "?";
-
-        const avatarUrl = getAvatarUrl(profile?.avatar_url);
-
-        const comment: ActivityComment = {
-          id: row.id,
-          activityId: row.activity_id,
-          userId: row.user_id,
-          userName: name,
-          userInitials: initials,
-          userColor: getUserColorClass(row.user_id),
-          content: row.content,
-          createdAt: row.created_at,
-          userAvatarUrl: avatarUrl,
-        };
-
-        if (!grouped[comment.activityId]) {
-          grouped[comment.activityId] = [];
-        }
-        grouped[comment.activityId].push(comment);
+    setCommentCounts((prev) => {
+      const next = { ...prev };
+      items.forEach((item) => {
+        if (!(item.id in next)) next[item.id] = item.commentCount ?? 0;
       });
-
-      setCommentsByPlace(grouped);
-    };
-
-    loadComments().catch(() => {
-      if (!isActive) return;
-      setCommentsByPlace({});
-      setSaveCounts({});
+      wishlistItems.forEach((item) => {
+        if (!(item.activityId in next)) next[item.activityId] = item.commentCount ?? 0;
+      });
+      return next;
     });
-
-    return () => {
-      isActive = false;
-    };
-  }, [items, wishlistItems, user?.id]);
+    setSaveCounts((prev) => {
+      const next = { ...prev };
+      items.forEach((item) => {
+        if (!(item.id in next)) next[item.id] = item.saveCount ?? 0;
+      });
+      wishlistItems.forEach((item) => {
+        if (!(item.activityId in next)) next[item.activityId] = item.saveCount ?? 0;
+      });
+      return next;
+    });
+  }, [items, wishlistItems]);
 
   const startEdit = (place: PlaceItem) => {
     setEditingId(place.id);
@@ -749,10 +725,15 @@ export default function ProfileView({
   };
 
   const toggleComments = (placeId: string) => {
-    setExpandedComments((prev) => ({
-      ...prev,
-      [placeId]: !prev[placeId],
-    }));
+    setExpandedComments((prev) => {
+      const willExpand = !prev[placeId];
+      // The thread's bodies are fetched the first time it is opened, not with
+      // the page it sits on.
+      if (willExpand && commentsByPlace[placeId] === undefined) {
+        void reloadCommentsForPlace(placeId);
+      }
+      return { ...prev, [placeId]: willExpand };
+    });
   };
 
   const updateCommentInput = (placeId: string, value: string) => {
@@ -795,7 +776,7 @@ export default function ProfileView({
         .join("")
         .toUpperCase() || "?";
 
-      const avatarUrl = getAvatarUrl(profile?.avatar_url, true);
+      const avatarUrl = getAvatarUrl(profile?.avatar_url);
 
       return {
         id: row.id,
@@ -811,6 +792,7 @@ export default function ProfileView({
     });
 
     setCommentsByPlace((prev) => ({ ...prev, [placeId]: loaded }));
+    setCommentCounts((prev) => ({ ...prev, [placeId]: loaded.length }));
     setCommentErrors((prev) => ({ ...prev, [placeId]: null }));
     setLoadingComments((prev) => ({ ...prev, [placeId]: false }));
   };
@@ -924,6 +906,8 @@ export default function ProfileView({
                         alt="Profilbild"
                         className="h-full w-full object-cover"
                         referrerPolicy="no-referrer"
+                        loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       comment.userInitials
@@ -1106,7 +1090,7 @@ export default function ProfileView({
                       ? "Link wird erstellt..."
                       : copied
                         ? "Link kopiert!"
-                        : "Freunde einladen"}
+                        : "Freund*innen einladen"}
                   </span>
                 </button>
 
@@ -1172,6 +1156,8 @@ export default function ProfileView({
                   alt="Profilbild"
                   className="h-full w-full rounded-full object-cover"
                   referrerPolicy="no-referrer"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             ) : (
@@ -1219,7 +1205,7 @@ export default function ProfileView({
             className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-brand-green-800 transition-colors cursor-pointer"
           >
             <span>
-              {friendsCount} {friendsCount === 1 ? "Freund" : "Freunde"}
+              {friendsCount} {friendsCount === 1 ? "Freund*in" : "Freund*innen"}
             </span>
           </Link>
         </div>
@@ -1273,6 +1259,7 @@ export default function ProfileView({
                       categories={place.categories}
                       timestamp={place.timestamp}
                       imageUrls={place.imageUrls}
+                      mapSnapshotUrl={place.mapSnapshotUrl}
                       isEditing={editingId === place.id}
                       editForm={
                         <div className="space-y-2">
@@ -1325,7 +1312,11 @@ export default function ProfileView({
                             <div className="flex flex-wrap gap-2">
                               {editImageUrls.map((url, idx) => (
                                 <div key={idx} className="relative h-16 w-16 rounded-xl border border-slate-200 overflow-hidden bg-slate-50 flex-shrink-0 group">
-                                  <img src={url} alt="Empfehlungsbild" className="h-full w-full object-cover" />
+                                  <ActivityPhoto
+                                    url={url}
+                                    alt="Empfehlungsbild"
+                                    className="h-full w-full object-cover"
+                                  />
                                   <button
                                     type="button"
                                     onClick={() => handleEditRemoveImage(url)}
@@ -1426,9 +1417,9 @@ export default function ProfileView({
                           title="Kommentare"
                         >
                           <MessageCircle className="h-4.5 w-4.5 transition-colors" />
-                          {(commentsByPlace[place.id]?.length ?? 0) > 0 && (
+                          {(commentCounts[place.id] ?? 0) > 0 && (
                             <span className="text-[11px] font-semibold select-none">
-                              {commentsByPlace[place.id].length}
+                              {commentCounts[place.id]}
                             </span>
                           )}
                         </button>
@@ -1455,6 +1446,12 @@ export default function ProfileView({
                     </Link>
                   </div>
                 )}
+
+                {hasMorePlaces && (
+                  <div ref={placesSentinelRef} aria-hidden="true">
+                    <ActivityCardSkeleton />
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -1474,6 +1471,7 @@ export default function ProfileView({
                     timestamp={item.timestamp}
                     friend={item.friend}
                     imageUrls={item.imageUrls}
+                    mapSnapshotUrl={item.mapSnapshotUrl}
                     bottomLeftActions={
                       <>
                         <button
@@ -1495,9 +1493,9 @@ export default function ProfileView({
                           title="Kommentare"
                         >
                           <MessageCircle className="h-4.5 w-4.5 transition-colors" />
-                          {(commentsByPlace[item.activityId]?.length ?? 0) > 0 && (
+                          {(commentCounts[item.activityId] ?? 0) > 0 && (
                             <span className="text-[11px] font-semibold select-none">
-                              {commentsByPlace[item.activityId].length}
+                              {commentCounts[item.activityId]}
                             </span>
                           )}
                         </button>
@@ -1512,8 +1510,14 @@ export default function ProfileView({
                   <Bookmark className="h-8 w-8 text-slate-300 mx-auto" />
                   <p className="text-xs text-slate-500 mt-2 font-medium">Deine Wishlist ist noch leer</p>
                   <p className="text-[10px] text-slate-400 mt-1 max-w-[200px] mx-auto leading-relaxed">
-                    Speichere die Lieblingsorte deiner Freunde über die Karte oder den Feed.
+                    Speichere die Lieblingsorte deiner Freund*innen über die Karte oder den Feed.
                   </p>
+                </div>
+              )}
+
+              {hasMoreWishlist && (
+                <div ref={wishlistSentinelRef} aria-hidden="true">
+                  <ActivityCardSkeleton />
                 </div>
               )}
             </div>

@@ -115,8 +115,15 @@ export default function BottomNav() {
           await fetchUnseenActivitiesCount(acceptedFriendIds);
         }
 
+        // Both channel names carry a random suffix. Supabase hands back the
+        // *same* channel object for a name that is already subscribed, and
+        // adding a `postgres_changes` callback to it then throws — which is what
+        // a Fast Refresh or React's double-invoked effect produces, because the
+        // old channel is still being torn down when the new one is created.
+        const suffix = Math.random().toString(36).slice(2);
+
         friendshipsChannel = supabase
-          .channel("pending-friendships")
+          .channel(`pending-friendships:${suffix}`)
           .on(
             "postgres_changes",
             {
@@ -140,7 +147,7 @@ export default function BottomNav() {
           .subscribe();
 
         activitiesChannel = supabase
-          .channel("friend-activities")
+          .channel(`friend-activities:${suffix}`)
           .on(
             "postgres_changes",
             {
@@ -248,7 +255,7 @@ export default function BottomNav() {
               </span>
             )}
           </div>
-          <span className="text-[10px] tracking-wide">Freunde</span>
+          <span className="text-[10px] tracking-wide">Friends</span>
         </Link>
 
         {/* Profile Tab */}

@@ -8,15 +8,9 @@ import { createClient } from "@/lib/supabase/client";
 import { authenticatedFetch } from "@/lib/auth/authenticatedFetch";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { getAvatarUrl } from "@/lib/avatar";
-
-interface FriendInfo {
-  id: string;
-  name: string;
-  username: string;
-  initials: string;
-  color: string;
-  avatarUrl?: string | null;
-}
+import { FEED_PAGE_SIZE, type FeedActivity } from "@/lib/activityFeed";
+import { useInfiniteScroll } from "@/lib/useInfiniteScroll";
+import { ActivityCardSkeleton } from "@/components/ui/Skeleton";
 
 interface ActivityComment {
   id: string;
@@ -29,27 +23,23 @@ interface ActivityComment {
   createdAt: string;
 }
 
-interface ActivityItem {
-  id: string;
-  placeName: string;
-  isMustSee: boolean;
-  description: string;
-  categories: string[];
-  timestamp: string;
-  friend: FriendInfo;
-  latitude?: number | null;
-  longitude?: number | null;
-  imageUrls?: string[];
-  commentCount?: number;
-  saveCount?: number;
-}
+type ActivityItem = FeedActivity;
 
 export default function ActivitiesView({
   activities = [],
   initialWishlistedIds = [],
+  hasMore = false,
+  isLoadingMore = false,
+  onLoadMore,
+  pageSize = FEED_PAGE_SIZE,
 }: {
   activities?: ActivityItem[];
   initialWishlistedIds?: string[];
+  /** Whether another page exists; the sentinel is rendered only while it does. */
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
+  onLoadMore?: () => void;
+  pageSize?: number;
 }) {
   const supabase = createClient();
   const [wishlistIds, setWishlistIds] = useState<string[]>(initialWishlistedIds);
@@ -87,16 +77,31 @@ export default function ActivitiesView({
     setWishlistIds(initialWishlistedIds);
   }, [initialWishlistedIds]);
 
+  // Seed the counters for rows this list has not seen before. Merging rather
+  // than replacing keeps the optimistic save count of a card the reader just
+  // bookmarked from being reset when the next page arrives.
   useEffect(() => {
-    const nextCommentCounts: Record<string, number> = {};
-    const nextSaveCounts: Record<string, number> = {};
-    activities.forEach((act) => {
-      nextCommentCounts[act.id] = act.commentCount ?? 0;
-      nextSaveCounts[act.id] = act.saveCount ?? 0;
+    setCommentCounts((prev) => {
+      const next = { ...prev };
+      activities.forEach((act) => {
+        if (!(act.id in next)) next[act.id] = act.commentCount ?? 0;
+      });
+      return next;
     });
-    setCommentCounts(nextCommentCounts);
-    setSaveCounts(nextSaveCounts);
+    setSaveCounts((prev) => {
+      const next = { ...prev };
+      activities.forEach((act) => {
+        if (!(act.id in next)) next[act.id] = act.saveCount ?? 0;
+      });
+      return next;
+    });
   }, [activities]);
+
+  const sentinelRef = useInfiniteScroll<HTMLDivElement>({
+    hasMore,
+    isLoading: isLoadingMore,
+    onLoadMore: () => onLoadMore?.(),
+  });
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -143,7 +148,9 @@ export default function ActivitiesView({
   };
 
   const getAvatarPublicUrl = (path?: string | null) => {
-    return getAvatarUrl(path, true);
+    // No cache-busting here: `?t=<now>` would make every avatar a new URL on
+    // every render, so the same faces get re-downloaded instead of cached.
+    return getAvatarUrl(path);
   };
 
   const getUserColorClass = (id: string): string => {
@@ -331,6 +338,7 @@ export default function ActivitiesView({
                 timestamp={activity.timestamp}
                 friend={activity.friend}
                 imageUrls={activity.imageUrls}
+                mapSnapshotUrl={activity.mapSnapshotUrl}
                 bottomLeftActions={
                   <>
                     <button
@@ -403,6 +411,8 @@ export default function ActivitiesView({
                                     alt="Profilbild"
                                     className="h-full w-full object-cover"
                                     referrerPolicy="no-referrer"
+                                    loading="lazy"
+                                    decoding="async"
                                   />
                                 ) : (
                                   comment.userInitials
@@ -535,15 +545,24 @@ export default function ActivitiesView({
                 Noch keine Aktivitäten
               </h3>
               <p className="text-xs text-slate-500 mt-1.5 max-w-[240px] mx-auto leading-relaxed">
-                Füge Freunde hinzu, um deren Empfehlungen und Aktivitäten hier zu sehen.
+                Füge Freund*innen hinzu, um deren Empfehlungen und Aktivitäten hier zu sehen.
               </p>
               <Link
                 href="/profile/friends"
                 className="mt-5 inline-flex items-center gap-1.5 rounded-xl bg-brand-green-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-brand-green-800 transition-all cursor-pointer"
               >
                 <Users className="h-4 w-4" />
-                Freunde finden
+                Freund*innen finden
               </Link>
+            </div>
+          )}
+
+          {/* Loading the next page starts when this scrolls into view. */}
+          {hasMore && (
+            <div ref={sentinelRef} className="space-y-4" aria-hidden="true">
+              {Array.from({ length: Math.min(2, pageSize) }).map((_, index) => (
+                <ActivityCardSkeleton key={index} />
+              ))}
             </div>
           )}
         </div>

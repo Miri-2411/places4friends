@@ -49,7 +49,7 @@ export default function DownloadRedirect() {
 
       <h1 className="mt-6 text-xl font-bold text-slate-900">places4friends laden</h1>
       <p className="mt-2 max-w-[300px] text-xs leading-relaxed text-slate-500">
-        Hol dir die App für dein Handy - deine Orte und Freunde sind sofort da. Wähle deinen Store:
+        Hol dir die App für dein Handy - deine Orte und Freund*innen sind sofort da. Wähle deinen Store:
       </p>
 
       <div className="mt-8 flex w-full max-w-[300px] flex-col gap-3">

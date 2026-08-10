@@ -56,7 +56,7 @@ export default function FriendsPageClient() {
   return (
     <AuthGate 
       context="friends" 
-      headerTitle="Freunde & Anfragen"
+      headerTitle="Freund*innen & Anfragen"
       skeleton={<FriendsSkeleton />}
     >
       {(user) => <FriendsContent user={user} />}

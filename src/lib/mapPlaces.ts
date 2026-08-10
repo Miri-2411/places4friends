@@ -119,14 +119,23 @@ export function expandMapBounds(bounds: MapBounds, paddingRatio = 0.25): MapBoun
   };
 }
 
-export function filterOverviewPins(
-  pins: MapOverviewPin[],
+/**
+ * Applies the map's three filters in memory.
+ *
+ * Generic over the pin, because the same filters run over the overview pins and
+ * over the fully populated network pins the map draws — the filtering used to
+ * be a query parameter, so every chip tap cost a request.
+ */
+export function filterOverviewPins<
+  T extends { userId: string; isMustSee: boolean; categories: string[] },
+>(
+  pins: T[],
   options: {
     userId?: string | null;
     mustSee?: boolean;
     categories?: string[];
   }
-): MapOverviewPin[] {
+): T[] {
   let next = pins;
 
   if (options.userId) {

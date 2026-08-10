@@ -889,7 +889,7 @@ export default function AdminDashboardClient() {
       <ConfirmDialog
         open={deletingInviteId !== null}
         title="Link revokieren"
-        message="Möchtest du diesen Einladungslink wirklich ungültig machen? Er kann danach von niemandem mehr zur Registrierung oder zum Hinzufügen von Freunden verwendet werden."
+        message="Möchtest du diesen Einladungslink wirklich ungültig machen? Er kann danach von niemandem mehr zur Registrierung oder zum Hinzufügen von Freund*innen verwendet werden."
         confirmLabel="Löschen"
         cancelLabel="Abbrechen"
         isLoading={actionLoading}

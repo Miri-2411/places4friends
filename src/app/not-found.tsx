@@ -12,7 +12,7 @@ export default function NotFound() {
       <h1 className="text-xl font-bold text-slate-900">404 - Wegbeschreibung verloren</h1>
       
       <p className="mt-3 text-sm text-slate-500 max-w-[280px] leading-relaxed">
-        Dieser Ort existiert nicht - wahrscheinlich haben deine Freunde ihn vor dir versteckt, um die besten Plätze für sich zu behalten.
+        Dieser Ort existiert nicht - wahrscheinlich haben deine Freund*innen ihn vor dir versteckt, um die besten Plätze für sich zu behalten.
       </p>
 
       {/* Action Button */}

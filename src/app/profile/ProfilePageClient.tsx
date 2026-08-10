@@ -1,15 +1,67 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import ProfileView from "@/components/ProfileView";
 import AuthGate from "@/components/auth/AuthGate";
 import { createClient } from "@/lib/supabase/client";
-import { formatTimestamp, getUserColorClass } from "@/lib/auth/placeFormatting";
-import { getAvatarUrl } from "@/lib/avatar";
+import {
+  fetchUserActivities,
+  fetchWishlistPage,
+  type FeedActivity,
+  type WishlistEntry,
+} from "@/lib/activityFeed";
 
 import { ProfileSkeleton } from "@/components/ui/Skeleton";
 
+type PlaceItem = NonNullable<Parameters<typeof ProfileView>[0]["places"]>[number];
+type WishlistItem = NonNullable<Parameters<typeof ProfileView>[0]["wishlist"]>[number];
+
+function toPlaceItem(activity: FeedActivity): PlaceItem {
+  return {
+    id: activity.id,
+    name: activity.placeName,
+    latitude: activity.latitude,
+    longitude: activity.longitude,
+    isMustSee: activity.isMustSee,
+    review: activity.description,
+    categories: activity.categories,
+    imageUrls: activity.imageUrls,
+    mapSnapshotUrl: activity.mapSnapshotUrl,
+    commentCount: activity.commentCount,
+    saveCount: activity.saveCount,
+    timestamp: activity.timestamp,
+  };
+}
+
+function toWishlistItem(entry: WishlistEntry): WishlistItem {
+  return {
+    id: entry.wishlistId,
+    activityId: entry.id,
+    name: entry.placeName,
+    latitude: entry.latitude,
+    longitude: entry.longitude,
+    isMustSee: entry.isMustSee,
+    review: entry.description,
+    categories: entry.categories,
+    imageUrls: entry.imageUrls,
+    mapSnapshotUrl: entry.mapSnapshotUrl,
+    commentCount: entry.commentCount,
+    saveCount: entry.saveCount,
+    timestamp: entry.timestamp,
+    friend: entry.friend,
+  };
+}
+
+/**
+ * Both profile tabs page on scroll. Only the first page of each is fetched up
+ * front — the wishlist's because switching tabs should not stall, and because
+ * one page of either is what fits on screen anyway.
+ *
+ * The author profiles behind the wishlist cards ride along on the activity rows
+ * (see `ACTIVITY_SELECT`), so this screen no longer resolves them in a separate
+ * `profiles` query per load.
+ */
 function ProfileContent({ user }: { user: User }) {
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
@@ -21,143 +73,41 @@ function ProfileContent({ user }: { user: User }) {
     avatarUrl: string | null;
   } | null>(null);
   const [friendsCount, setFriendsCount] = useState(0);
-  const [places, setPlaces] = useState<Parameters<typeof ProfileView>[0]["places"]>([]);
-  const [wishlist, setWishlist] = useState<Parameters<typeof ProfileView>[0]["wishlist"]>([]);
+
+  const [places, setPlaces] = useState<PlaceItem[]>([]);
+  const [hasMorePlaces, setHasMorePlaces] = useState(false);
+  const [isLoadingMorePlaces, setIsLoadingMorePlaces] = useState(false);
+  const placesCursorRef = useRef<string | null>(null);
+  const placesFetchingRef = useRef(false);
+
+  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+  const [hasMoreWishlist, setHasMoreWishlist] = useState(false);
+  const [isLoadingMoreWishlist, setIsLoadingMoreWishlist] = useState(false);
+  const wishlistCursorRef = useRef<string | null>(null);
+  const wishlistFetchingRef = useRef(false);
+
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    let mounted = true;
+    mountedRef.current = true;
 
     async function load() {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("username, full_name, avatar_url")
-        .eq("id", user.id)
-        .single();
-
-      const { count } = await supabase
-        .from("friendships")
-        .select("*", { count: "exact", head: true })
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .eq("status", "accepted");
-
-      const { data: activities } = await supabase
-        .from("activities")
-        .select(
-          "id, place_name, latitude, longitude, is_superlike, description, created_at, categories, image_urls"
-        )
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
-      const loadedPlaces = (activities || []).map((act) => ({
-        id: act.id,
-        name: act.place_name,
-        latitude: act.latitude,
-        longitude: act.longitude,
-        isMustSee: act.is_superlike,
-        review: act.description || "",
-        categories: Array.isArray(act.categories) ? act.categories : [],
-        imageUrls: Array.isArray(act.image_urls) ? act.image_urls : [],
-        timestamp: formatTimestamp(act.created_at),
-      }));
-
-      const { data: wishlistData } = await supabase
-        .from("wishlist")
-        .select(
-          `
-          id,
-          activity_id,
-          created_at,
-          activity:activities (
-            id,
-            user_id,
-            place_name,
-            latitude,
-            longitude,
-            is_superlike,
-            description,
-            categories,
-            created_at,
-            image_urls
-          )
-        `
-        )
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
-      const wishlistRows = (wishlistData || []) as unknown as {
-        id: string;
-        created_at: string;
-        activity: {
-          id: string;
-          user_id: string;
-          place_name: string;
-          latitude: number | null;
-          longitude: number | null;
-          is_superlike: boolean;
-          description: string | null;
-          categories: string[] | null;
-          image_urls: string[] | null;
-        } | null;
-      }[];
-
-      const wishlistFriendIds = wishlistRows
-        .map((w) => w.activity?.user_id)
-        .filter((id): id is string => Boolean(id));
-
-      let wishlistFriendProfiles: {
-        id: string;
-        username: string | null;
-        full_name: string | null;
-        avatar_url: string | null;
-      }[] = [];
-
-      if (wishlistFriendIds.length > 0) {
-        const { data: profiles } = await supabase
+      const [{ data: profile }, { count }, firstPlaces, firstWishlist] = await Promise.all([
+        supabase
           .from("profiles")
-          .select("id, username, full_name, avatar_url")
-          .in("id", wishlistFriendIds as string[]);
-        wishlistFriendProfiles = profiles || [];
-      }
+          .select("username, full_name, avatar_url")
+          .eq("id", user.id)
+          .single(),
+        supabase
+          .from("friendships")
+          .select("*", { count: "exact", head: true })
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .eq("status", "accepted"),
+        fetchUserActivities(user.id),
+        fetchWishlistPage(user.id),
+      ]);
 
-      const loadedWishlist = wishlistRows
-        .map((w) => {
-          const act = w.activity;
-          if (!act) return null;
-          const friend = wishlistFriendProfiles.find((p) => p.id === act.user_id);
-          const friendName = friend?.full_name ?? friend?.username ?? "Freund";
-          const friendInitials =
-            friendName
-              .split(" ")
-              .map((n: string) => n[0])
-              .slice(0, 2)
-              .join("")
-              .toUpperCase() || "?";
-          const friendAvatarUrl = getAvatarUrl(friend?.avatar_url, true);
-
-          return {
-            id: w.id,
-            activityId: act.id,
-            name: act.place_name,
-            latitude: act.latitude,
-            longitude: act.longitude,
-            isMustSee: act.is_superlike,
-            review: act.description || "",
-            categories: Array.isArray(act.categories) ? act.categories : [],
-            imageUrls: Array.isArray(act.image_urls) ? act.image_urls : [],
-            timestamp: formatTimestamp(w.created_at),
-            friend: {
-              id: act.user_id,
-              name: friendName,
-              username: friend?.username ?? "",
-              initials: friendInitials,
-              color: getUserColorClass(act.user_id),
-              avatarUrl: friendAvatarUrl,
-            },
-          };
-        })
-        .filter((w): w is NonNullable<typeof w> => w !== null);
-
-      if (!mounted) return;
+      if (!mountedRef.current) return;
 
       setUserData({
         id: user.id,
@@ -167,16 +117,64 @@ function ProfileContent({ user }: { user: User }) {
         avatarUrl: profile?.avatar_url ?? null,
       });
       setFriendsCount(count ?? 0);
-      setPlaces(loadedPlaces);
-      setWishlist(loadedWishlist);
+
+      placesCursorRef.current = firstPlaces.nextCursor;
+      setPlaces(firstPlaces.items.map(toPlaceItem));
+      setHasMorePlaces(firstPlaces.nextCursor !== null);
+
+      wishlistCursorRef.current = firstWishlist.nextCursor;
+      setWishlist(firstWishlist.items.map(toWishlistItem));
+      setHasMoreWishlist(firstWishlist.nextCursor !== null);
+
       setLoading(false);
     }
 
-    load();
+    void load();
     return () => {
-      mounted = false;
+      mountedRef.current = false;
     };
   }, [supabase, user]);
+
+  const loadMorePlaces = useCallback(async () => {
+    if (placesFetchingRef.current || placesCursorRef.current === null) return;
+    placesFetchingRef.current = true;
+    setIsLoadingMorePlaces(true);
+    try {
+      const page = await fetchUserActivities(user.id, { before: placesCursorRef.current });
+      if (!mountedRef.current) return;
+      placesCursorRef.current = page.nextCursor;
+      setHasMorePlaces(page.nextCursor !== null);
+      setPlaces((prev) => {
+        const known = new Set(prev.map((item) => item.id));
+        return [...prev, ...page.items.map(toPlaceItem).filter((item) => !known.has(item.id))];
+      });
+    } finally {
+      placesFetchingRef.current = false;
+      if (mountedRef.current) setIsLoadingMorePlaces(false);
+    }
+  }, [user.id]);
+
+  const loadMoreWishlist = useCallback(async () => {
+    if (wishlistFetchingRef.current || wishlistCursorRef.current === null) return;
+    wishlistFetchingRef.current = true;
+    setIsLoadingMoreWishlist(true);
+    try {
+      const page = await fetchWishlistPage(user.id, { before: wishlistCursorRef.current });
+      if (!mountedRef.current) return;
+      wishlistCursorRef.current = page.nextCursor;
+      setHasMoreWishlist(page.nextCursor !== null);
+      setWishlist((prev) => {
+        const known = new Set(prev.map((item) => item.id));
+        return [
+          ...prev,
+          ...page.items.map(toWishlistItem).filter((item) => !known.has(item.id)),
+        ];
+      });
+    } finally {
+      wishlistFetchingRef.current = false;
+      if (mountedRef.current) setIsLoadingMoreWishlist(false);
+    }
+  }, [user.id]);
 
   if (loading || !userData) {
     return <ProfileSkeleton />;
@@ -188,6 +186,12 @@ function ProfileContent({ user }: { user: User }) {
       friendsCount={friendsCount}
       places={places}
       wishlist={wishlist}
+      hasMorePlaces={hasMorePlaces}
+      isLoadingMorePlaces={isLoadingMorePlaces}
+      onLoadMorePlaces={loadMorePlaces}
+      hasMoreWishlist={hasMoreWishlist}
+      isLoadingMoreWishlist={isLoadingMoreWishlist}
+      onLoadMoreWishlist={loadMoreWishlist}
     />
   );
 }

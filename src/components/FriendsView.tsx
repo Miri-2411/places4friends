@@ -214,8 +214,11 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!active || !user) return;
 
+      // The random suffix keeps a Fast Refresh (or React's double-invoked
+      // effect) from re-using a channel that is already subscribed, which makes
+      // adding the callback below throw.
       channel = supabase
-        .channel("friends-realtime")
+        .channel(`friends-realtime:${Math.random().toString(36).slice(2)}`)
         .on(
           "postgres_changes",
           {
@@ -401,7 +404,7 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
       {/* Header */}
       <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4">
         <div className="w-16" /> {/* Left Spacer to center title */}
-        <h1 className="text-sm font-bold text-slate-900">Freunde & Anfragen</h1>
+        <h1 className="text-sm font-bold text-slate-900">Freund*innen & Anfragen</h1>
         <div className="w-16" />
       </header>
 
@@ -415,7 +418,7 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
               : "border-transparent text-slate-400 hover:text-slate-600"
           }`}
         >
-          Freunde
+          Freund*innen
           {friendsList.length > 0 && (
             <span className="inline-flex items-center justify-center rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-600">
               {friendsList.length}
@@ -453,7 +456,7 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
                 <div className="rounded-2xl border border-brand-green-100 bg-gradient-to-br from-brand-green-50/30 to-brand-green-50/70 p-4 shadow-sm relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
                   <div>
                     <h3 className="text-xs font-bold text-slate-900">
-                      Freunde per Link einladen
+                      Freund*innen per Link einladen
                     </h3>
                     <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
                       Link teilen – wer ihn öffnet, ist sofort mit dir befreundet.
@@ -527,7 +530,7 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
                     className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-green-700 hover:bg-brand-green-800 text-white font-bold py-3.5 px-4 shadow-md hover:shadow-lg active:scale-[0.98] transition-all cursor-pointer text-xs"
                   >
                     <UserPlus className="h-4 w-4" />
-                    <span>Freunde suchen & hinzufügen</span>
+                    <span>Freund*innen suchen & hinzufügen</span>
                   </button>
                 )}
 
@@ -560,6 +563,8 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
                                   alt="Profilbild"
                                   className="h-full w-full object-cover"
                                   referrerPolicy="no-referrer"
+                                  loading="lazy"
+                                  decoding="async"
                                 />
                               ) : (
                                 getInitials(friend.full_name, friend.username)
@@ -605,7 +610,7 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
                                         className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 active:scale-98 transition-all cursor-pointer text-left"
                                       >
                                         <UserMinus className="h-3.5 w-3.5" />
-                                        <span>Freund entfernen</span>
+                                        <span>Freund*in entfernen</span>
                                       </button>
                                     </div>
                                   </>
@@ -620,7 +625,7 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
                 ) : (
                   <div className="rounded-2xl border border-dashed border-slate-200 bg-white py-14 text-center">
                     <User className="h-9 w-9 text-slate-300 mx-auto" />
-                    <h4 className="text-xs font-bold text-slate-700 mt-3">Noch keine Freunde</h4>
+                    <h4 className="text-xs font-bold text-slate-700 mt-3">Noch keine Freund*innen</h4>
                     <p className="text-[11px] text-slate-450 max-w-xs mx-auto mt-1 px-4 leading-relaxed">
                       Suche nach anderen Usern, um ihre Empfehlungen auf deiner Karte freizuschalten.
                     </p>
@@ -629,7 +634,7 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
                       className="mt-4 inline-flex items-center gap-1 rounded-xl bg-brand-green-700 px-3.5 py-2 text-[11px] font-bold text-white shadow-sm hover:bg-brand-green-800 transition-all cursor-pointer"
                     >
                       <UserPlus className="h-3.5 w-3.5" />
-                      <span>Freunde finden</span>
+                      <span>Freund*innen finden</span>
                     </button>
                   </div>
                 )}
@@ -667,6 +672,8 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
                                     alt="Profilbild"
                                     className="h-full w-full object-cover"
                                     referrerPolicy="no-referrer"
+                                    loading="lazy"
+                                    decoding="async"
                                   />
                                 ) : (
                                   getInitials(req.full_name, req.username)
@@ -744,6 +751,8 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
                                     alt="Profilbild"
                                     className="h-full w-full object-cover"
                                     referrerPolicy="no-referrer"
+                                    loading="lazy"
+                                    decoding="async"
                                   />
                                 ) : (
                                   getInitials(req.full_name, req.username)
@@ -806,7 +815,7 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
           >
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 bg-white">
-              <h2 className="text-sm font-bold text-slate-900">Freunde suchen & hinzufügen</h2>
+              <h2 className="text-sm font-bold text-slate-900">Freund*innen suchen & hinzufügen</h2>
               <button
                 onClick={() => {
                   setIsSearchModalOpen(false);
@@ -881,6 +890,8 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
                                   alt="Profilbild"
                                   className="h-full w-full object-cover"
                                   referrerPolicy="no-referrer"
+                                  loading="lazy"
+                                  decoding="async"
                                 />
                               ) : (
                                 getInitials(profile.full_name, profile.username)
@@ -945,7 +956,7 @@ export default function FriendsView({ currentUser }: FriendsViewProps) {
                   <div className="rounded-2xl border border-dashed border-slate-200 bg-white py-16 text-center flex flex-col items-center justify-center min-h-[260px]">
                     <Search className="h-8 w-8 text-slate-300 mb-3" />
                     <p className="text-xs text-slate-400 font-medium max-w-[200px] leading-relaxed">
-                      Finde deine Freunde über ihren Namen oder Username
+                      Finde deine Freund*innen über ihren Namen oder Username
                     </p>
                   </div>
                 )}

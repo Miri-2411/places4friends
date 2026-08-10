@@ -110,7 +110,7 @@ export default function AppPromoModal() {
           </h3>
           <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
             Die App ist deutlich schneller und für dein Handy gemacht. Kostenlos laden - deine Orte
-            und Freunde sind sofort da.
+            und Freund*innen sind sofort da.
           </p>
         </div>
         <button

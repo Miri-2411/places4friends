@@ -53,7 +53,7 @@ const FAQ: { question: string; answer: ReactNode }[] = [
     question: "Wie blockiere ich einen Nutzer?",
     answer: (
       <>
-        Über das Profil des Nutzers oder deine Freundesliste mit{" "}
+        Über das Profil des Nutzers oder deine Freund*innen-Liste mit{" "}
         <span className="font-semibold text-slate-800">Blockieren</span>. Eine bestehende Freundschaft oder Anfrage wird
         dabei aufgelöst und ihr seht die Inhalte des jeweils anderen nicht mehr. Rückgängig machen kannst du das unter{" "}
         <span className="font-semibold text-slate-800">Einstellungen → Blockierte Nutzer</span>.

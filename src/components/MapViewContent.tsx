@@ -31,14 +31,24 @@ import {
 } from "@/lib/mapViewport";
 import { getUserColorClass } from "@/lib/mapNetwork";
 import {
+  expandMapBounds,
   filterOverviewPins,
   mergeMapPlace,
+  type MapBounds,
   type MapOverviewPin,
   type MapPlace,
   type MapPlaceDetails,
   type MapPlacePin,
 } from "@/lib/mapPlaces";
+import {
+  collectCategories,
+  countPinsByUser,
+  fetchNetworkPins,
+  pinsWithinBounds,
+  type NetworkPin,
+} from "@/lib/mapPins";
 import { applyMapLabelLanguage, MAP_LABEL_LANGUAGE } from "@/lib/mapLanguage";
+import ActivityPhoto from "@/components/ui/ActivityPhoto";
 import Toast from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import {
@@ -54,6 +64,9 @@ interface UserProfile {
   color: string;
   avatarUrl?: string | null;
 }
+
+/** How stale the in-memory pin set may get before returning to the tab re-reads it. */
+const PINS_TTL_MS = 5 * 60 * 1000;
 
 type ClusterablePin = Pick<MapPlacePin, "id" | "latitude" | "longitude"> & Partial<MapPlacePin>;
 
@@ -125,6 +138,19 @@ function projectToWorldPixel(longitude: number, latitude: number, zoom: number) 
   const mercatorY = Math.log(Math.tan(Math.PI / 4 + latRad / 2));
   const y = ((1 - mercatorY / Math.PI) / 2) * worldSize;
   return { x, y };
+}
+
+/** The map's current bounds, padded so pins just off-screen stay mounted. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function readMapBounds(map: any): MapBounds | null {
+  const bounds = map?.getBounds?.();
+  if (!bounds) return null;
+  return expandMapBounds({
+    north: bounds.getNorth(),
+    south: bounds.getSouth(),
+    east: bounds.getEast(),
+    west: bounds.getWest(),
+  });
 }
 
 function clusterPlacesByScreenOverlap(places: ClusterablePin[], zoom: number): ClusteredPlaceGroup[] {
@@ -348,10 +374,27 @@ export default function MapViewContent() {
   const [isPinsRefreshing, setIsPinsRefreshing] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [friends, setFriends] = useState<UserProfile[]>([]);
-  const [placePins, setPlacePins] = useState<MapPlacePin[]>([]);
-  const [overviewPins, setOverviewPins] = useState<MapOverviewPin[]>([]);
-  const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
-  const [friendPlaceCounts, setFriendPlaceCounts] = useState<Record<string, number>>({});
+  /**
+   * The whole network's pins, read once (see `fetchNetworkPins`). Every filter,
+   * every pan and the category list are derived from this in memory.
+   */
+  const [allPins, setAllPins] = useState<NetworkPin[]>([]);
+  /**
+   * Set when the network outgrew a single fetch. Only then does the map fall
+   * back to the per-viewport endpoint and the separate overview request, which
+   * is why both are still here.
+   */
+  const [pinsTruncated, setPinsTruncated] = useState(false);
+  const [viewportPins, setViewportPins] = useState<MapPlacePin[]>([]);
+  const [fallbackOverviewPins, setFallbackOverviewPins] = useState<MapOverviewPin[]>([]);
+  const [fallbackCategories, setFallbackCategories] = useState<string[]>([]);
+  const [fallbackFriendCounts, setFallbackFriendCounts] = useState<Record<string, number>>({});
+  /**
+   * The drawn area, updated from the map's own move events. Used to keep
+   * markers for pins nobody can see out of the DOM — a purely local decision
+   * now, where it used to be the `where` clause of a request per pan.
+   */
+  const [visibleBounds, setVisibleBounds] = useState<MapBounds | null>(null);
 
   const [viewState, setViewState] = useState<MapViewport>({
     longitude: FALLBACK_VIEWPORT.longitude,
@@ -405,6 +448,8 @@ export default function MapViewContent() {
   const activePreloadsRef = useRef(new globalThis.Map<string, Promise<MapPlaceDetails>>());
   const deepLinkPlaceRef = useRef<MapPlace | null>(null);
   const lastSelectedCategoriesStr = useRef("");
+  const networkUserIdsRef = useRef<string[]>([]);
+  const pinsLoadedAtRef = useRef(0);
   viewStateRef.current = viewState;
 
   const mapFilterParams = useMemo(() => {
@@ -417,6 +462,30 @@ export default function MapViewContent() {
     return params;
   }, [selectedUserId, recommendationFilter, selectedCategories]);
 
+  const categoryOptions = useMemo(
+    () => (pinsTruncated ? fallbackCategories : collectCategories(allPins)),
+    [pinsTruncated, fallbackCategories, allPins]
+  );
+  const friendPlaceCounts = useMemo(
+    () => (pinsTruncated ? fallbackFriendCounts : countPinsByUser(allPins)),
+    [pinsTruncated, fallbackFriendCounts, allPins]
+  );
+
+  const overviewPins = useMemo<MapOverviewPin[]>(
+    () =>
+      pinsTruncated
+        ? fallbackOverviewPins
+        : allPins.map((pin) => ({
+            id: pin.id,
+            userId: pin.userId,
+            latitude: pin.latitude,
+            longitude: pin.longitude,
+            isMustSee: pin.isMustSee,
+            categories: pin.categories,
+          })),
+    [pinsTruncated, fallbackOverviewPins, allPins]
+  );
+
   const filteredOverviewPins = useMemo(
     () =>
       filterOverviewPins(overviewPins, {
@@ -426,6 +495,24 @@ export default function MapViewContent() {
       }),
     [overviewPins, selectedUserId, recommendationFilter, selectedCategories]
   );
+
+  const placePins = useMemo<MapPlacePin[]>(() => {
+    if (pinsTruncated) return viewportPins;
+    const filtered = filterOverviewPins(allPins, {
+      userId: selectedUserId,
+      mustSee: recommendationFilter === "must-see",
+      categories: selectedCategories,
+    });
+    return visibleBounds ? pinsWithinBounds(filtered, visibleBounds) : filtered;
+  }, [
+    pinsTruncated,
+    viewportPins,
+    allPins,
+    selectedUserId,
+    recommendationFilter,
+    selectedCategories,
+    visibleBounds,
+  ]);
 
   const hasActiveFilters = recommendationFilter !== "all" || selectedCategories.length > 0;
 
@@ -443,6 +530,11 @@ export default function MapViewContent() {
 
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
+  /**
+   * The pre-`fetchNetworkPins` path, kept for networks too large to hold in
+   * memory: one request per viewport, filters included. Nothing calls it unless
+   * `pinsTruncated` is set.
+   */
   const fetchViewportPins = useCallback(async () => {
     if (!user || !mapReadyRef.current) return;
 
@@ -467,7 +559,7 @@ export default function MapViewContent() {
       });
       if (!response.ok) throw new Error("Pins konnten nicht geladen werden.");
       const data = (await response.json()) as { pins: MapPlacePin[] };
-      setPlacePins(data.pins ?? []);
+      setViewportPins(data.pins ?? []);
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
       console.error("Error loading viewport pins:", error);
@@ -538,11 +630,12 @@ export default function MapViewContent() {
 
         if (!authUser) {
           setUser(null);
-          setPlacePins([]);
-          setOverviewPins([]);
+          setAllPins([]);
+          setViewportPins([]);
+          setFallbackOverviewPins([]);
           setFriends([]);
-          setCategoryOptions([]);
-          setFriendPlaceCounts({});
+          setFallbackCategories([]);
+          setFallbackFriendCounts({});
           setIsSessionLoading(false);
           return;
         }
@@ -563,12 +656,14 @@ export default function MapViewContent() {
           .eq("status", "accepted");
 
         const getAvatarPublicUrl = (path?: string | null) => {
-          return getAvatarUrl(path, true);
+          // Not cache-busted: the filter strip is a row of avatars, and a
+          // `?t=<now>` would re-download every one of them on every visit.
+          return getAvatarUrl(path);
         };
 
         const loadedFriends = (friendships || []).map((f: any) => {
           const otherProfile = f.sender_id === authUser.id ? f.receiver : f.sender;
-          const name = otherProfile?.full_name ?? otherProfile?.username ?? "Freund";
+          const name = otherProfile?.full_name ?? otherProfile?.username ?? "Freund*in";
           const initials = name
             .split(" ")
             .map((n: string) => n[0])
@@ -586,16 +681,38 @@ export default function MapViewContent() {
 
         setFriends(loadedFriends);
 
-        const metaResponse = await authenticatedFetch("/api/map/meta");
-        if (metaResponse.ok) {
-          const meta = (await metaResponse.json()) as {
-            categories: string[];
-            friendPlaceCounts: Record<string, number>;
-            overviewPins: MapOverviewPin[];
-          };
-          setCategoryOptions(meta.categories ?? []);
-          setFriendPlaceCounts(meta.friendPlaceCounts ?? {});
-          setOverviewPins(meta.overviewPins ?? []);
+        // One request for every pin this account may see. The filter panel's
+        // categories, the per-friend counts and the overview pins are all
+        // derived from it, so `/api/map/meta` is only needed on the fallback
+        // path below.
+        const networkUserIds = [
+          authUser.id,
+          ...loadedFriends.map((f: UserProfile) => f.id),
+        ];
+
+        networkUserIdsRef.current = networkUserIds;
+
+        try {
+          const { pins, truncated } = await fetchNetworkPins(networkUserIds);
+          setAllPins(pins);
+          setPinsTruncated(truncated);
+          pinsLoadedAtRef.current = Date.now();
+
+          if (truncated) {
+            const metaResponse = await authenticatedFetch("/api/map/meta");
+            if (metaResponse.ok) {
+              const meta = (await metaResponse.json()) as {
+                categories: string[];
+                friendPlaceCounts: Record<string, number>;
+                overviewPins: MapOverviewPin[];
+              };
+              setFallbackCategories(meta.categories ?? []);
+              setFallbackFriendCounts(meta.friendPlaceCounts ?? {});
+              setFallbackOverviewPins(meta.overviewPins ?? []);
+            }
+          }
+        } catch (pinsError) {
+          console.error("Error loading network pins:", pinsError);
         }
 
         const { data: wishlistEntries } = await supabase
@@ -677,19 +794,51 @@ export default function MapViewContent() {
     initViewport();
   }, [isSessionLoading, user, searchParams]);
 
+  /**
+   * Nothing else re-reads the pins for the life of this screen, so a friend who
+   * posts while the tab sits open would otherwise never show up. Coming back to
+   * the tab re-reads them, but at most once per PINS_TTL_MS — the point of the
+   * single fetch is that returning to a tab costs nothing.
+   */
   useEffect(() => {
-    if (isSessionLoading || !user || !mapReadyRef.current) return;
+    if (isSessionLoading || !user || pinsTruncated) return;
+
+    const refreshIfStale = () => {
+      if (document.visibilityState !== "visible") return;
+      if (Date.now() - pinsLoadedAtRef.current < PINS_TTL_MS) return;
+      pinsLoadedAtRef.current = Date.now();
+      fetchNetworkPins(networkUserIdsRef.current)
+        .then(({ pins, truncated }) => {
+          setAllPins(pins);
+          setPinsTruncated(truncated);
+        })
+        .catch((error) => console.error("Error refreshing network pins:", error));
+    };
+
+    document.addEventListener("visibilitychange", refreshIfStale);
+    window.addEventListener("focus", refreshIfStale);
+    return () => {
+      document.removeEventListener("visibilitychange", refreshIfStale);
+      window.removeEventListener("focus", refreshIfStale);
+    };
+  }, [isSessionLoading, user, pinsTruncated]);
+
+  // Changing a filter costs nothing while the whole set is in memory — this
+  // only re-runs for a network too large for that.
+  useEffect(() => {
+    if (isSessionLoading || !user || !mapReadyRef.current || !pinsTruncated) return;
     void fetchViewportPins();
-  }, [isSessionLoading, user, mapFilterParams, fetchViewportPins]);
+  }, [isSessionLoading, user, pinsTruncated, mapFilterParams, fetchViewportPins]);
 
   const handleMapLoad = useCallback(() => {
     mapReadyRef.current = true;
     const map = mapRef.current?.getMap?.();
+    setVisibleBounds(readMapBounds(map));
     applyMapLabelLanguage(map);
-    if (!isSessionLoading && user) {
+    if (!isSessionLoading && user && pinsTruncated) {
       void fetchViewportPins();
     }
-  }, [isSessionLoading, user, fetchViewportPins]);
+  }, [isSessionLoading, user, pinsTruncated, fetchViewportPins]);
 
   useEffect(() => {
     const map = mapRef.current?.getMap?.();
@@ -697,7 +846,8 @@ export default function MapViewContent() {
   }, [currentStyle]);
 
   const handleMoveEnd = useCallback(() => {
-    void fetchViewportPins();
+    // Panning is answered from `allPins`; only the fallback path has to ask.
+    if (pinsTruncated) void fetchViewportPins();
 
     if (!user?.id) return;
     persistViewportDebounced(user.id, {
@@ -705,7 +855,7 @@ export default function MapViewContent() {
       longitude: viewStateRef.current.longitude,
       zoom: viewStateRef.current.zoom,
     });
-  }, [user, persistViewportDebounced, fetchViewportPins]);
+  }, [user, persistViewportDebounced, pinsTruncated, fetchViewportPins]);
 
   // Handle zoom and select from URL search params reactively
   useEffect(() => {
@@ -1841,7 +1991,7 @@ export default function MapViewContent() {
               className="flex flex-shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-100 bg-white/95 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition-all duration-200 cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.03)] backdrop-blur-md active:scale-95"
             >
               <UserPlus className="h-3.5 w-3.5" />
-              <span>Freunde hinzufügen</span>
+              <span>Freund*innen hinzufügen</span>
             </Link>
           </div>
         )
@@ -1863,7 +2013,10 @@ export default function MapViewContent() {
         <Map
           ref={mapRef}
           {...viewState}
-          onMove={(evt) => setViewState(evt.viewState)}
+          onMove={(evt) => {
+            setViewState(evt.viewState);
+            setVisibleBounds(readMapBounds(evt.target));
+          }}
           onMoveEnd={handleMoveEnd}
           onLoad={handleMapLoad}
           style={{ width: "100%", height: "100%" }}
@@ -2063,7 +2216,11 @@ export default function MapViewContent() {
                             href={`/activities/${selectedPlace.id}`}
                             className="relative aspect-square rounded-lg overflow-hidden border border-slate-100 bg-slate-50 cursor-pointer hover:opacity-90 transition-opacity"
                           >
-                            <img src={url} alt={`Bild ${idx + 1}`} className="h-full w-full object-cover" />
+                            <ActivityPhoto
+                        url={url}
+                        alt={`Bild ${idx + 1}`}
+                        className="h-full w-full object-cover"
+                      />
                           </Link>
                         ))}
                       </div>
@@ -2361,9 +2518,9 @@ export default function MapViewContent() {
               </div>
             </div>
           )}
-            <h3 className="text-sm font-bold text-slate-900">Entdecke Orte mit deinen Freunden</h3>
+            <h3 className="text-sm font-bold text-slate-900">Entdecke Orte mit deinen Freund*innen</h3>
             <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
-              Melde dich an oder registriere dich, um die Lieblingsorte deiner Freunde auf der interaktiven Karte zu sehen.
+              Melde dich an oder registriere dich, um die Lieblingsorte deiner Freund*innen auf der interaktiven Karte zu sehen.
             </p>
           </div>
           <div className="flex gap-2">

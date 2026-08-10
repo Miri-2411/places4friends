@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { MapPin, Sparkles, X, Navigation } from "lucide-react";
+import ActivityPhoto from "@/components/ui/ActivityPhoto";
 
 export interface FriendInfo {
   id: string;
@@ -29,6 +30,12 @@ export interface ActivityCardProps {
   editForm?: React.ReactNode;
   children?: React.ReactNode;
   imageUrls?: string[];
+  /**
+   * The cached static map generated when the post was created. When present it
+   * is served from our own Storage bucket, which saves the per-render Mapbox
+   * static-image request the fallback below costs.
+   */
+  mapSnapshotUrl?: string | null;
   cardless?: boolean;
 }
 
@@ -48,6 +55,7 @@ export default function ActivityCard({
   editForm,
   children,
   imageUrls = [],
+  mapSnapshotUrl = null,
   cardless = false,
 }: ActivityCardProps) {
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
@@ -130,10 +138,15 @@ export default function ActivityCard({
                   <div className={`relative rounded-xl overflow-hidden border border-slate-100 bg-slate-50 ${
                     ((hasCoordinates ? 1 : 0) + imageUrls.length) === 1 ? "aspect-[21/9] max-h-32" : "aspect-square"
                   }`}>
-                    <img 
-                      src={`https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+22c55e(${longitude},${latitude})/${longitude},${latitude},15.5/${((hasCoordinates ? 1 : 0) + imageUrls.length) === 1 ? "800x300" : "600x600"}@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`}
+                    <img
+                      src={
+                        mapSnapshotUrl ??
+                        `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+22c55e(${longitude},${latitude})/${longitude},${latitude},15.5/${((hasCoordinates ? 1 : 0) + imageUrls.length) === 1 ? "800x300" : "600x600"}@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`
+                      }
                       alt={`Karte von ${placeName}`}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <Link 
                       href={`/?lat=${latitude}&lng=${longitude}&placeId=${id}`}
@@ -152,8 +165,8 @@ export default function ActivityCard({
                     }`}
                     onClick={() => setActiveImageUrl(url)}
                   >
-                    <img
-                      src={url}
+                    <ActivityPhoto
+                      url={url}
                       alt={`Bild ${idx + 1}`}
                       className="h-full w-full object-cover"
                     />
@@ -202,6 +215,8 @@ export default function ActivityCard({
                       alt="Profilbild"
                       className="h-full w-full object-cover"
                       referrerPolicy="no-referrer"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     friend.initials

@@ -26,7 +26,7 @@ const STEPS: StepDefinition[] = [
     id: "welcome",
     title: "Willkommen bei places4friends",
     description:
-      "Hier kannst du besondere Orte mit deinen Freunden teilen und ihre Empfehlungen erkunden. Auf einer gemeinsamen Karte behaltet ihr alle Orte im Überblick.",
+      "Hier kannst du besondere Orte mit deinen Freund*innen teilen und ihre Empfehlungen erkunden. Auf einer gemeinsamen Karte behaltet ihr alle Orte im Überblick.",
   },
   
   {
@@ -35,7 +35,7 @@ const STEPS: StepDefinition[] = [
     description:
       "Die Karte ist dein Radar. Filtere Empfehlungen, entdecke Highlights und öffne Details direkt am Pin.",
     bullets: [
-      "Filtere nach Kategorien oder Freunden.",
+      "Filtere nach Kategorien oder Freund*innen.",
       "Springe direkt zu deinem Standort.",
       "Klicke auf Pins, um Details und Kommentare zu sehen.",
     ],
@@ -48,7 +48,7 @@ const STEPS: StepDefinition[] = [
     id: "activities",
     title: "Aktivitäten verstehen",
     description:
-      "Hier siehst du die neusten Empfehlungen deiner Freunde.",
+      "Hier siehst du die neusten Empfehlungen deiner Freund*innen.",
     bullets: [
       "Klicke auf das Bookmark Symbol, um die Aktivität deiner Wishlist hinzuzufügen.",
       "Klicke auf das Kommentar Symbol, um einen Kommentar zu hinterlassen.",
@@ -70,13 +70,13 @@ const STEPS: StepDefinition[] = [
   },
   {
     id: "friends",
-    title: "Freunde hinzufügen",
+    title: "Freund*innen hinzufügen",
     description:
-      "Folge Freunden, damit ihre Empfehlungen auf deiner Karte und im Aktivitäten-Feed auftauchen.",
+      "Folge Freund*innen, damit ihre Empfehlungen auf deiner Karte und im Aktivitäten-Feed auftauchen.",
     bullets: [
       "Suche nach Namen oder Benutzernamen.",
-      "Freundschaftsanfragen findest du im Freunde-Tab.",
-      "Teile einen Freundeslink, um dich direkt mit Freunden zu verbinden.",
+      "Freundschaftsanfragen findest du im Friends-Tab.",
+      "Teile einen Einladungslink, um dich direkt mit Freund*innen zu verbinden.",
     ],
   },
   {
@@ -88,7 +88,7 @@ const STEPS: StepDefinition[] = [
       "Im Menü rechts oben kannst du unter Einstellungen deine Profil bearbeiten.",
       "Bei Meinen Empfehlungen kannst du deine Empfehlungen bearbeiten oder löschen.",
       "Unter Wishlist siehst du deine vorgemerkten Empfehlungen.",
-      "Setze ein Profilbild, damit Freunde dich leichter erkennen können.",
+      "Setze ein Profilbild, damit Freund*innen dich leichter erkennen können.",
     ],
   },
 ];

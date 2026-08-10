@@ -39,13 +39,13 @@ const FAILURES: Record<Failure, { icon: LucideIcon; title: string; message: stri
     icon: Clock,
     title: "Einladung abgelaufen",
     message:
-      "Dieser Einladungslink ist abgelaufen. Bitte deinen Freund oder deine Freundin um einen neuen Link.",
+      "Dieser Einladungslink ist abgelaufen. Bitte deine*n Freund*in um einen neuen Link.",
   },
   max_uses: {
     icon: AlertTriangle,
     title: "Einladung aufgebraucht",
     message:
-      "Dieser Einladungslink wurde bereits zu oft verwendet. Bitte deinen Freund oder deine Freundin um einen neuen Link.",
+      "Dieser Einladungslink wurde bereits zu oft verwendet. Bitte deine*n Freund*in um einen neuen Link.",
   },
 };
 

@@ -8,7 +8,8 @@ import ActivityCard from "./ActivityCard";
 import { createClient } from "@/lib/supabase/client";
 import { authenticatedFetch } from "@/lib/auth/authenticatedFetch";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { buildActivityCountMap } from "@/lib/activityCounts";
+import { useInfiniteScroll } from "@/lib/useInfiniteScroll";
+import { ActivityCardSkeleton } from "@/components/ui/Skeleton";
 import type { FriendInviteValidationError } from "@/lib/friendInvite";
 import { getAvatarUrl } from "@/lib/avatar";
 
@@ -43,6 +44,9 @@ interface PlaceItem {
   timestamp: string;
   categories?: string[];
   imageUrls?: string[];
+  mapSnapshotUrl?: string | null;
+  commentCount?: number;
+  saveCount?: number;
 }
 
 interface Friendship {
@@ -60,6 +64,9 @@ export default function PublicProfileView({
   initialFriendship = null,
   currentUserId,
   inviteToken = null,
+  hasMorePlaces = false,
+  isLoadingMorePlaces = false,
+  onLoadMorePlaces,
 }: {
   friend: User;
   friendsCount?: number;
@@ -68,6 +75,9 @@ export default function PublicProfileView({
   initialFriendship?: Friendship | null;
   currentUserId: string;
   inviteToken?: string | null;
+  hasMorePlaces?: boolean;
+  isLoadingMorePlaces?: boolean;
+  onLoadMorePlaces?: () => void;
 }) {
   const router = useRouter();
   const [wishlistIds, setWishlistIds] = useState<string[]>(initialWishlistedIds);
@@ -92,6 +102,7 @@ export default function PublicProfileView({
   } | null>(null);
   const [activeCommentMenuId, setActiveCommentMenuId] = useState<string | null>(null);
   const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const [saveCounts, setSaveCounts] = useState<Record<string, number>>({});
   const [inviteValidation, setInviteValidation] = useState<
     "loading" | "valid" | FriendInviteValidationError
@@ -266,9 +277,9 @@ export default function PublicProfileView({
 
   const inviteInvalidMessage =
     inviteValidation === "expired"
-      ? "Dieser Einladungslink ist abgelaufen. Bitte deinen Freund um einen neuen Link."
+      ? "Dieser Einladungslink ist abgelaufen. Bitte deine*n Freund*in um einen neuen Link."
       : inviteValidation === "max_uses"
-        ? "Dieser Einladungslink wurde bereits zu oft verwendet. Bitte deinen Freund um einen neuen Link."
+        ? "Dieser Einladungslink wurde bereits zu oft verwendet. Bitte deine*n Freund*in um einen neuen Link."
         : inviteValidation === "not_found"
           ? "Dieser Einladungslink ist ungültig."
           : null;
@@ -334,93 +345,47 @@ export default function PublicProfileView({
   }, [initialWishlistedIds]);
 
   useEffect(() => {
-    setAvatarPublicUrl(getAvatarUrl(friend.avatarUrl, true));
+    setAvatarPublicUrl(getAvatarUrl(friend.avatarUrl));
   }, [friend.avatarUrl]);
 
+  /**
+   * `comment_count` and `save_count` are columns the database maintains, so the
+   * numbers beside each card arrive with the card. This used to fetch every
+   * comment on every place of this profile — with each commenter's profile —
+   * plus every wishlist row, just to render two counters; the bodies are now
+   * loaded per thread, when one is opened.
+   */
   useEffect(() => {
-    if (places.length === 0) {
-      setCommentsByPlace({});
-      setSaveCounts({});
-      return;
-    }
-
-    const activityIds = places.map((item) => item.id);
-    let isActive = true;
-
-    const loadComments = async () => {
-      const [{ data, error }, { data: savesData }] = await Promise.all([
-        supabase
-          .from("activity_comments")
-          .select(
-            "id, activity_id, user_id, content, created_at, profiles:profiles!activity_comments_user_id_fkey(id, username, full_name, avatar_url)"
-          )
-          .in("activity_id", activityIds)
-          .order("created_at", { ascending: true }),
-        supabase.from("wishlist").select("activity_id").in("activity_id", activityIds),
-      ]);
-
-      if (!isActive) return;
-
-      if (error) {
-        setCommentsByPlace({});
-        setSaveCounts({});
-        return;
-      }
-
-      setSaveCounts(
-        buildActivityCountMap((savesData || []) as { activity_id: string }[])
-      );
-
-      const grouped: Record<string, ActivityComment[]> = {};
-      (data || []).forEach((row: any) => {
-        const profile = row.profiles;
-        const name = profile?.full_name ?? profile?.username ?? "Nutzer";
-        const initials = name
-          .split(" ")
-          .map((n: string) => n[0])
-          .slice(0, 2)
-          .join("")
-          .toUpperCase() || "?";
-
-        const avatarUrl = getAvatarUrl(profile?.avatar_url);
-
-        const comment: ActivityComment = {
-          id: row.id,
-          activityId: row.activity_id,
-          userId: row.user_id,
-          userName: name,
-          userInitials: initials,
-          userColor: getUserColorClass(row.user_id),
-          content: row.content,
-          createdAt: row.created_at,
-          userAvatarUrl: avatarUrl,
-        };
-
-        if (!grouped[comment.activityId]) {
-          grouped[comment.activityId] = [];
-        }
-        grouped[comment.activityId].push(comment);
+    setCommentCounts((prev) => {
+      const next = { ...prev };
+      places.forEach((place) => {
+        if (!(place.id in next)) next[place.id] = place.commentCount ?? 0;
       });
-
-      setCommentsByPlace(grouped);
-    };
-
-    loadComments().catch(() => {
-      if (!isActive) return;
-      setCommentsByPlace({});
-      setSaveCounts({});
+      return next;
     });
+    setSaveCounts((prev) => {
+      const next = { ...prev };
+      places.forEach((place) => {
+        if (!(place.id in next)) next[place.id] = place.saveCount ?? 0;
+      });
+      return next;
+    });
+  }, [places]);
 
-    return () => {
-      isActive = false;
-    };
-  }, [places, currentUserId]);
+  const placesSentinelRef = useInfiniteScroll<HTMLDivElement>({
+    hasMore: hasMorePlaces,
+    isLoading: isLoadingMorePlaces,
+    onLoadMore: () => onLoadMorePlaces?.(),
+  });
 
   const toggleComments = (placeId: string) => {
-    setExpandedComments((prev) => ({
-      ...prev,
-      [placeId]: !prev[placeId],
-    }));
+    setExpandedComments((prev) => {
+      const willExpand = !prev[placeId];
+      if (willExpand && commentsByPlace[placeId] === undefined) {
+        void reloadCommentsForPlace(placeId);
+      }
+      return { ...prev, [placeId]: willExpand };
+    });
   };
 
   const updateCommentInput = (placeId: string, value: string) => {
@@ -479,6 +444,7 @@ export default function PublicProfileView({
     });
 
     setCommentsByPlace((prev) => ({ ...prev, [placeId]: loaded }));
+    setCommentCounts((prev) => ({ ...prev, [placeId]: loaded.length }));
     setCommentErrors((prev) => ({ ...prev, [placeId]: null }));
     setLoadingComments((prev) => ({ ...prev, [placeId]: false }));
   };
@@ -621,6 +587,8 @@ export default function PublicProfileView({
                   alt="Profilbild"
                   className="h-full w-full rounded-full object-cover"
                   referrerPolicy="no-referrer"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             ) : (
@@ -631,7 +599,7 @@ export default function PublicProfileView({
           </div>
 
           <h2 className="mt-4 text-lg font-bold text-slate-950">
-            {friend.name ?? "Freund"}
+            {friend.name ?? "Freund*in"}
           </h2>
           {friend.username && (
             <p className="text-xs font-semibold text-brand-green-700 mt-0.5">
@@ -644,7 +612,7 @@ export default function PublicProfileView({
             className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-brand-green-800 transition-colors cursor-pointer"
           >
             <span>
-              {localFriendsCount} {localFriendsCount === 1 ? "Freund" : "Freunde"}
+              {localFriendsCount} {localFriendsCount === 1 ? "Freund*in" : "Freund*innen"}
             </span>
           </button>
 
@@ -657,7 +625,7 @@ export default function PublicProfileView({
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-xs font-bold text-slate-900">
-                      Einladung von {friend.name?.split(" ")[0] ?? "Freund"}
+                      Einladung von {friend.name?.split(" ")[0] ?? "Freund*in"}
                     </h3>
                     {inviteValidation === "loading" ? (
                       <p className="text-[11px] text-slate-500 mt-1 leading-relaxed flex items-center gap-1.5">
@@ -716,7 +684,7 @@ export default function PublicProfileView({
                 className="inline-flex items-center gap-2 rounded-xl bg-brand-green-700 hover:bg-brand-green-800 active:scale-95 transition-all text-white font-bold px-4.5 py-2 cursor-pointer text-xs shadow-sm hover:shadow"
               >
                 <UserPlus className="h-3.5 w-3.5" />
-                <span>Freund hinzufügen</span>
+                <span>Freund*in hinzufügen</span>
               </button>
             ) : friendship.status === "pending" && friendship.sender_id === currentUserId ? (
               <button
@@ -750,7 +718,7 @@ export default function PublicProfileView({
         <div className="mt-8 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Empfehlungen von {friend.name?.split(" ")[0] ?? "Freund"}
+              Empfehlungen von {friend.name?.split(" ")[0] ?? "Freund*in"}
             </h3>
           </div>
 
@@ -770,6 +738,7 @@ export default function PublicProfileView({
                     categories={place.categories}
                     timestamp={place.timestamp}
                     imageUrls={place.imageUrls}
+                    mapSnapshotUrl={place.mapSnapshotUrl}
                     bottomLeftActions={
                       <div className="flex items-center gap-1.5">
                         <button
@@ -798,9 +767,9 @@ export default function PublicProfileView({
                           title="Kommentare"
                         >
                           <MessageCircle className="h-4.5 w-4.5 transition-colors" />
-                          {(commentsByPlace[place.id]?.length ?? 0) > 0 && (
+                          {(commentCounts[place.id] ?? 0) > 0 && (
                             <span className="text-[11px] font-semibold select-none">
-                              {commentsByPlace[place.id].length}
+                              {commentCounts[place.id]}
                             </span>
                           )}
                         </button>
@@ -843,6 +812,8 @@ export default function PublicProfileView({
                                         alt="Profilbild"
                                         className="h-full w-full object-cover"
                                         referrerPolicy="no-referrer"
+                                        loading="lazy"
+                                        decoding="async"
                                       />
                                     ) : (
                                       comment.userInitials
@@ -976,6 +947,12 @@ export default function PublicProfileView({
                   </p>
                 </div>
               )}
+
+              {hasMorePlaces && (
+                <div ref={placesSentinelRef} aria-hidden="true">
+                  <ActivityCardSkeleton />
+                </div>
+              )}
             </div>
           ) : (
             <div className="rounded-2xl border border-slate-100 bg-white p-6 py-12 text-center shadow-sm">
@@ -1006,7 +983,7 @@ export default function PublicProfileView({
           >
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 bg-white">
-              <h2 className="text-sm font-bold text-slate-900">Freunde von {friend.name?.split(" ")[0]}</h2>
+              <h2 className="text-sm font-bold text-slate-900">Freund*innen von {friend.name?.split(" ")[0]}</h2>
               <button
                 onClick={() => {
                   setIsFriendsModalOpen(false);
@@ -1023,7 +1000,7 @@ export default function PublicProfileView({
               {isLoadingFriends ? (
                 <div className="flex flex-col items-center justify-center py-20">
                   <Loader2 className="h-7 w-7 animate-spin text-brand-green-600" />
-                  <p className="text-xs text-slate-450 mt-3 font-medium">Freunde werden geladen...</p>
+                  <p className="text-xs text-slate-450 mt-3 font-medium">Freund*innen werden geladen...</p>
                 </div>
               ) : friendsList.length > 0 ? (
                 <div className="divide-y divide-slate-100 rounded-2xl border border-slate-100 bg-white p-2 shadow-sm">
@@ -1042,6 +1019,8 @@ export default function PublicProfileView({
                               alt="Profilbild"
                               className="h-full w-full object-cover"
                               referrerPolicy="no-referrer"
+                              loading="lazy"
+                              decoding="async"
                             />
                           ) : (
                             getInitials(f.full_name, f.username)
@@ -1062,7 +1041,7 @@ export default function PublicProfileView({
               ) : (
                 <div className="rounded-2xl border border-dashed border-slate-200 bg-white py-14 text-center">
                   <p className="text-xs text-slate-500 font-medium">
-                    Noch keine Freunde
+                    Noch keine Freund*innen
                   </p>
                 </div>
               )}

@@ -24,6 +24,7 @@ import { createClient } from "@/lib/supabase/client";
 import { authenticatedFetch } from "@/lib/auth/authenticatedFetch";
 import ActivityCard from "./ActivityCard";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import ActivityPhoto from "@/components/ui/ActivityPhoto";
 import { getAvatarUrl } from "@/lib/avatar";
 
 interface User {
@@ -661,7 +662,7 @@ export default function ActivityDetailView({
                   className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-green-700 py-3 text-xs font-bold text-white shadow-sm hover:bg-brand-green-800 transition-all active:scale-[0.98] cursor-pointer"
                 >
                   <UserPlus className="h-4 w-4" />
-                  <span>Freund hinzufügen</span>
+                  <span>Freund*in hinzufügen</span>
                 </button>
               ) : friendship.status === "pending" && friendship.sender_id === currentUserId ? (
                 <button
@@ -755,7 +756,11 @@ export default function ActivityDetailView({
                           key={idx}
                           className="relative h-16 w-16 rounded-xl border border-slate-200 overflow-hidden bg-slate-50 flex-shrink-0"
                         >
-                          <img src={url} alt="Empfehlungsbild" className="h-full w-full object-cover" />
+                          <ActivityPhoto
+                            url={url}
+                            alt="Empfehlungsbild"
+                            className="h-full w-full object-cover"
+                          />
                           <button
                             type="button"
                             onClick={() => handleEditRemoveImage(url)}
@@ -926,6 +931,8 @@ export default function ActivityDetailView({
                                 alt="Profilbild"
                                 className="h-full w-full object-cover"
                                 referrerPolicy="no-referrer"
+                                loading="lazy"
+                                decoding="async"
                               />
                             ) : (
                               comment.userInitials

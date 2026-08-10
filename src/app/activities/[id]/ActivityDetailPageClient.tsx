@@ -35,10 +35,14 @@ function ActivityDetailContent({
     let mounted = true;
 
     async function load() {
+      // The author profile is embedded through `activities_user_id_profiles_fkey`
+      // rather than resolved in a second request, and `save_count` comes off the
+      // row: counting `wishlist` here could never be right, because its RLS only
+      // exposes the viewer's own row, so the number was always 0 or 1.
       const { data: act, error: activityError } = await supabase
         .from("activities")
         .select(
-          "id, user_id, place_name, place_address, latitude, longitude, is_superlike, description, created_at, categories, image_urls"
+          "id, user_id, place_name, place_address, latitude, longitude, is_superlike, description, created_at, categories, image_urls, save_count, author:profiles!activities_user_id_profiles_fkey(id, username, full_name, avatar_url)"
         )
         .eq("id", activityId)
         .single();
@@ -51,14 +55,15 @@ function ActivityDetailContent({
         return;
       }
 
-      const { data: creatorProfile } = await supabase
-        .from("profiles")
-        .select("id, username, full_name, avatar_url")
-        .eq("id", act.user_id)
-        .single();
+      const creatorProfile = act.author as unknown as {
+        id: string;
+        username: string | null;
+        full_name: string | null;
+        avatar_url: string | null;
+      } | null;
 
       const creatorName =
-        creatorProfile?.full_name ?? creatorProfile?.username ?? "Freund";
+        creatorProfile?.full_name ?? creatorProfile?.username ?? "Freund*in";
       const creatorInitials =
         creatorName
           .split(" ")
@@ -67,40 +72,30 @@ function ActivityDetailContent({
           .join("")
           .toUpperCase() || "?";
 
-      const creatorAvatarUrl = getAvatarUrl(creatorProfile?.avatar_url, true);
+      const creatorAvatarUrl = getAvatarUrl(creatorProfile?.avatar_url);
 
       const isOwner = currentUserId === act.user_id;
 
-      let initialFriendship: Friendship | null = null;
-      if (!isOwner) {
-        const { data: friendshipsData } = await supabase
-          .from("friendships")
-          .select("id, sender_id, receiver_id, status")
-          .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`);
-
-        initialFriendship =
-          ((friendshipsData || []).find(
-            (f) => f.sender_id === act.user_id || f.receiver_id === act.user_id
-          ) as Friendship | undefined) ?? null;
-      }
-
-      const [{ data: wishlistData }, { count: saveCount }] = await Promise.all([
-        supabase
-          .from("wishlist")
-          .select("id")
-          .eq("user_id", currentUserId)
-          .eq("activity_id", activityId)
-          .maybeSingle(),
-        supabase
-          .from("wishlist")
-          .select("*", { count: "exact", head: true })
-          .eq("activity_id", activityId),
-      ]);
-
-      const { data: commentsData } = await supabase
-        .from("activity_comments")
-        .select(
-          `
+      // None of these depends on the others, so they go out together instead of
+      // one after the next.
+      const [friendshipsRes, { data: wishlistData }, { data: commentsData }] =
+        await Promise.all([
+          isOwner
+            ? Promise.resolve({ data: null })
+            : supabase
+                .from("friendships")
+                .select("id, sender_id, receiver_id, status")
+                .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`),
+          supabase
+            .from("wishlist")
+            .select("id")
+            .eq("user_id", currentUserId)
+            .eq("activity_id", activityId)
+            .maybeSingle(),
+          supabase
+            .from("activity_comments")
+            .select(
+              `
           id,
           activity_id,
           user_id,
@@ -108,9 +103,15 @@ function ActivityDetailContent({
           created_at,
           profiles:profiles!activity_comments_user_id_fkey(id, username, full_name, avatar_url)
         `
-        )
-        .eq("activity_id", activityId)
-        .order("created_at", { ascending: true });
+            )
+            .eq("activity_id", activityId)
+            .order("created_at", { ascending: true }),
+        ]);
+
+      const initialFriendship =
+        ((friendshipsRes.data || []).find(
+          (f) => f.sender_id === act.user_id || f.receiver_id === act.user_id
+        ) as Friendship | undefined) ?? null;
 
       type CommentRow = {
         id: string;
@@ -135,7 +136,7 @@ function ActivityDetailContent({
             .slice(0, 2)
             .join("")
             .toUpperCase() || "?";
-        const avatarUrl = getAvatarUrl(profile?.avatar_url, true);
+        const avatarUrl = getAvatarUrl(profile?.avatar_url);
 
         return {
           id: row.id,
@@ -176,7 +177,7 @@ function ActivityDetailContent({
         },
         initialComments: mappedComments,
         initialWishlisted: !!wishlistData,
-        initialSaveCount: saveCount ?? 0,
+        initialSaveCount: act.save_count ?? 0,
         initialFriendship,
         isOwner,
         currentUserId,

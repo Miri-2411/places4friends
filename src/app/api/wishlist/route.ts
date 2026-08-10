@@ -81,7 +81,7 @@ export async function GET(request: Request) {
         categories: Array.isArray(activity.categories) ? activity.categories : [],
         friend: {
           id: activity.user_id,
-          name: creator?.full_name ?? creator?.username ?? "Freund",
+          name: creator?.full_name ?? creator?.username ?? "Freund*in",
           username: creator?.username ?? "",
         },
       };

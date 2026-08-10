@@ -6,22 +6,22 @@ export default function AuthPrompt({ context }: { context: "profile" | "create" 
     profile: {
       title: "Dein Profil",
       description:
-        "Melde dich an oder erstelle ein Konto, um dein Profil zu sehen, Orte zu speichern und mit Freunden zu teilen.",
+        "Melde dich an oder erstelle ein Konto, um dein Profil zu sehen, Orte zu speichern und mit Freund*innen zu teilen.",
     },
     friends: {
-      title: "Freunde",
+      title: "Freund*innen",
       description:
-        "Melde dich an oder erstelle ein Konto, um deine Freunde zu verwalten, Anfragen zu senden und eure Lieblingsorte auf der Karte zu teilen.",
+        "Melde dich an oder erstelle ein Konto, um deine Freund*innen zu verwalten, Anfragen zu senden und eure Lieblingsorte auf der Karte zu teilen.",
     },
     create: {
       title: "Ort empfehlen",
       description:
-        "Melde dich an oder erstelle ein Konto, um Orte zu empfehlen und auf der Karte mit deinen Freunden zu teilen.",
+        "Melde dich an oder erstelle ein Konto, um Orte zu empfehlen und auf der Karte mit deinen Freund*innen zu teilen.",
     },
     activities: {
       title: "Aktivitäten",
       description:
-        "Melde dich an oder erstelle ein Konto, um die neuesten Aktivitäten und Empfehlungen deiner Freunde zu sehen.",
+        "Melde dich an oder erstelle ein Konto, um die neuesten Aktivitäten und Empfehlungen deiner Freund*innen zu sehen.",
     },
   };
 

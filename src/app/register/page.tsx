@@ -26,7 +26,7 @@ export default function RegisterPage() {
           </div>
           <h2 className="text-xl font-bold text-slate-900">Konto erstellen</h2>
           <p className="mt-1.5 text-xs text-slate-500 max-w-[260px]">
-            Erstelle ein Konto, um Orte zu empfehlen und mit Freunden zu teilen.
+            Erstelle ein Konto, um Orte zu empfehlen und mit Freund*innen zu teilen.
           </p>
         </div>
 
