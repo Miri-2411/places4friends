@@ -26,28 +26,53 @@ export default function AgbPage() {
           <Scale className="h-8 w-8 text-brand-green-700 shrink-0" />
           <div>
             <h2 className="font-bold text-slate-800">Nutzungsbedingungen</h2>
-            <p className="text-xs text-slate-500">Stand: Juli 2026</p>
+            <p className="text-xs text-slate-500">Stand: August 2026</p>
           </div>
         </div>
 
         <section className="space-y-2">
           <h3 className="text-base font-bold text-slate-900">1. Geltungsbereich</h3>
           <p>
-            Diese Nutzungsbedingungen regeln die Nutzung der Web-App places4friends (nachfolgend „App“). Betreiber ist
-            Janick Braun, Krottenkopfstr. 24a, 82377 Penzberg (Angaben im{" "}
+            Diese Nutzungsbedingungen regeln die Nutzung von places4friends (nachfolgend „App“) – sowohl der Web-App als
+            auch der mobilen Anwendungen für iOS und Android. Betreiber ist Janick Braun, Krottenkopfstr. 24a, 82377
+            Penzberg (Angaben im{" "}
             <Link href="/impressum" className="text-brand-green-700 hover:underline">
               Impressum
             </Link>
             ). Mit der Registrierung oder Nutzung der App akzeptieren Sie diese Bedingungen.
+          </p>
+          <p>
+            Die mobilen Anwendungen werden über den App Store von Apple bzw. Google Play bezogen. Zusätzlich gelten die
+            Bedingungen des jeweiligen Store-Betreibers. Der Vertrag über die Nutzung der App kommt ausschließlich
+            zwischen Ihnen und dem oben genannten Betreiber zustande; Apple und Google sind daran nicht beteiligt und
+            insbesondere nicht für die App, deren Inhalte oder den Support verantwortlich. Etwaige Gewährleistungs- und
+            Produkthaftungsansprüche sowie Ansprüche wegen der Verletzung von Rechten Dritter richten sich allein gegen
+            den Betreiber. Die Nutzung der App ist unentgeltlich; kostenpflichtige Funktionen bestehen derzeit nicht.
           </p>
         </section>
 
         <section className="space-y-2">
           <h3 className="text-base font-bold text-slate-900">2. Leistungsbeschreibung</h3>
           <p>
-            places4friends ist eine soziale Empfehlungs-App: Nutzer können Lieblingsorte auf einer interaktiven Karte teilen,
-            mit Freunden vernetzen, Orte kommentieren und Merklisten pflegen. Der konkrete Funktionsumfang kann sich im
-            Rahmen der Weiterentwicklung ändern.
+            places4friends ist eine soziale Empfehlungs-App: Nutzer können Lieblingsorte auf einer interaktiven Karte
+            teilen, sich mit Freunden vernetzen, Empfehlungen kommentieren und in einer Merkliste sammeln. Hinzu kommen
+            insbesondere die Weitergabe fremder Empfehlungen an das eigene Netzwerk („Repost“, siehe § 6), das Hervorheben
+            einzelner Empfehlungen als „Must-See“, Mitteilungen zu Ereignissen im eigenen Netzwerk (in der App und
+            optional als Push-Nachricht), persönliche Einladungslinks, Freundschaftsvorschläge, ein freiwilliger Abgleich
+            des Adressbuchs sowie die Übernahme von Orten aus Google Maps.
+          </p>
+          <p>
+            Empfehlungen, Kommentare und Merklisten sind grundsätzlich nur für Sie und Ihre bestätigten Freundinnen und
+            Freunde sichtbar; Profilangaben (Benutzername, Name, Profilbild) sind für alle angemeldeten Nutzer sichtbar.
+            Welche Ausnahmen es davon gibt, beschreibt Abschnitt 4 unserer{" "}
+            <Link href="/datenschutz" className="text-brand-green-700 hover:underline">
+              Datenschutzerklärung
+            </Link>
+            .
+          </p>
+          <p>
+            Der konkrete Funktionsumfang kann sich im Rahmen der Weiterentwicklung ändern. Die mobilen Anwendungen können
+            Aktualisierungen automatisch nachladen.
           </p>
         </section>
 
@@ -98,9 +123,15 @@ export default function AgbPage() {
           <p>
             Für von Ihnen eingestellte Inhalte (Texte, Bilder, Empfehlungen, Kommentare) sind Sie allein verantwortlich. Mit
             dem Einstellen räumen Sie uns ein einfaches, nicht ausschließliches, zeitlich auf die Dauer der Bereitstellung in
-            der App beschränktes Nutzungsrecht ein, um diese Inhalte den von Ihnen gewählten Empfängern (z. B. Freunden) in der
-            App anzuzeigen, zu speichern und technisch zu verarbeiten. Dieses Recht endet mit Löschung des Inhalts oder Ihres
-            Kontos.
+            der App beschränktes Nutzungsrecht ein, um diese Inhalte in der App anzuzeigen, zu speichern und technisch zu
+            verarbeiten – gegenüber den von Ihnen gewählten Empfängern (Ihren bestätigten Freundinnen und Freunden) sowie,
+            soweit eine Weitergabe nach § 6 erfolgt, gegenüber deren Netzwerk. Dieses Recht endet mit Löschung des Inhalts
+            oder Ihres Kontos; bereits erfolgte Weitergaben bleiben davon nach Maßgabe von § 6 unberührt.
+          </p>
+          <p>
+            Sie versichern, über die erforderlichen Rechte an den eingestellten Inhalten zu verfügen. Bei Fotos, auf denen
+            andere Personen erkennbar sind, benötigen Sie deren Einverständnis. Beim Übernehmen eigener Google-Bewertungen
+            gilt dasselbe: Sie dürfen nur Inhalte einstellen, die von Ihnen stammen.
           </p>
           <p>
             Wir sind berechtigt, Inhalte zu entfernen oder Konten zu sperren, wenn ein begründeter Verdacht auf Verstöße gegen
@@ -109,11 +140,59 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">6. Moderation, Meldungen und Zugriff durch den Betreiber</h3>
+          <h3 className="text-base font-bold text-slate-900">6. Weitergabe von Empfehlungen (Reposts)</h3>
+          <p>
+            Nutzer können eine Empfehlung, die ihnen angezeigt wird, als eigenen Beitrag an ihr eigenes Netzwerk
+            weitergeben. Dabei gilt:
+          </p>
+          <ul className="list-disc pl-5 space-y-1 text-xs">
+            <li>
+              Die weitergegebenen Inhalte (Ortsangabe, Beschreibung, Bilder) werden dadurch auch Personen zugänglich, mit
+              denen die ursprüngliche Urheberin bzw. der ursprüngliche Urheber nicht befreundet ist. Wer eine Empfehlung
+              einstellt, willigt in diese Weitergabe ein, solange er sie nicht nach dem nächsten Punkt ausschließt.
+            </li>
+            <li>
+              Beim Erstellen einer Empfehlung kann die Weitergabe ausgeschlossen werden (Funktion „Gatekeepen“). Diese
+              Entscheidung ist nachträglich nicht mehr änderbar.
+            </li>
+            <li>
+              Bei jeder Weitergabe wird die ursprüngliche Urheberin bzw. der ursprüngliche Urheber namentlich genannt.
+              Diese Angabe kann von der weitergebenden Person nicht verändert oder entfernt werden und bleibt auch dann
+              bestehen, wenn der ursprüngliche Beitrag gelöscht wird.
+            </li>
+            <li>
+              Kommentare werden nicht mitübertragen: Ein weitergegebener Beitrag hat einen eigenen Kommentarbereich, den
+              nur das Netzwerk der weitergebenden Person sieht.
+            </li>
+            <li>
+              Für den weitergegebenen Beitrag ist die weitergebende Person nach § 5 verantwortlich; für den
+              ursprünglichen Beitrag bleibt es bei der Verantwortlichkeit der Urheberin bzw. des Urhebers.
+            </li>
+            <li>
+              Löschen Sie Ihre Empfehlung oder Ihr Konto, entfällt die Anzeige Ihres Beitrags. Bereits von anderen
+              erstellte Weitergaben sind eigenständige Beiträge dieser Personen und bleiben bestehen; die Urheberangabe zu
+              Ihrer Person bleibt daran erhalten. Wünschen Sie auch deren Entfernung, wenden Sie sich an uns.
+            </li>
+          </ul>
+        </section>
+
+        <section className="space-y-2">
+          <h3 className="text-base font-bold text-slate-900">7. Moderation, Meldungen und Zugriff durch den Betreiber</h3>
           <p>
             Nutzer können Inhalte und andere Nutzer über die in der App bereitgestellte Melde- und Blockierfunktion
             melden bzw. blockieren. Wir prüfen eingehende Meldungen und bemühen uns um eine zeitnahe Bearbeitung;
-            rechtswidrige oder gegen diese Bedingungen verstoßende Inhalte werden entfernt.
+            rechtswidrige oder gegen diese Bedingungen verstoßende Inhalte werden entfernt. Eine Blockierung wirkt
+            wechselseitig: Sie und die blockierte Person werden einander in der App verborgen, und bestehende
+            Freundschaften und Anfragen zwischen Ihnen werden aufgelöst.
+          </p>
+          <p>
+            Sind Sie mit einer Entscheidung über eine Meldung, mit der Entfernung eines Ihrer Inhalte oder mit der
+            Sperrung Ihres Kontos nicht einverstanden, können Sie dieser formlos per E-Mail an{" "}
+            <a href="mailto:mail@janickbraun.com" className="text-brand-green-700 hover:underline">
+              mail@janickbraun.com
+            </a>{" "}
+            widersprechen. Wir prüfen den Widerspruch und teilen Ihnen das Ergebnis mit. Die Möglichkeit, sich an eine
+            Aufsichtsbehörde oder ein Gericht zu wenden, bleibt unberührt.
           </p>
           <p>
             Zu Moderations- und Sicherheitszwecken kann der Betreiber in seiner Funktion als Administrator auf sämtliche
@@ -132,7 +211,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">7. Freundschaften und Einladungslinks</h3>
+          <h3 className="text-base font-bold text-slate-900">8. Freundschaften und Einladungslinks</h3>
           <p>
             Freundschaftsverbindungen entstehen durch Anfragen oder über persönliche Einladungslinks. Einladungslinks sind
             persönlich und nicht zur öffentlichen Verbreitung in Massenmedien bestimmt. Sie haften für den missbräuchlichen
@@ -141,7 +220,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">8. Verfügbarkeit</h3>
+          <h3 className="text-base font-bold text-slate-900">9. Verfügbarkeit</h3>
           <p>
             Wir bemühen uns um eine hohe Verfügbarkeit, garantieren diese jedoch nicht. Wartung, Updates oder Störungen bei
             Drittanbietern (z. B. Hosting, Karten) können zu vorübergehenden Einschränkungen führen. Die App kann sich noch in
@@ -150,7 +229,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">9. Haftung und externe Dienste</h3>
+          <h3 className="text-base font-bold text-slate-900">10. Haftung und externe Dienste</h3>
           <p>
             Wir haften unbeschränkt bei Vorsatz und grober Fahrlässigkeit sowie bei Schäden aus der Verletzung von Leben,
             Körper oder Gesundheit. Im Übrigen haften wir nur bei Verletzung wesentlicher Vertragspflichten, beschränkt auf den
@@ -158,22 +237,31 @@ export default function AgbPage() {
             gesetzliche Vorschriften entgegenstehen.
           </p>
           <p>
-            Die App bindet Dienste Dritter ein (z. B. Mapbox für Karten, Google für Ortssuche, Google Maps für Wegbeschreibungen).
-            Für Inhalte und Verfügbarkeit externer Dienste sind deren Betreiber verantwortlich. Links zu externen Websites
-            erfolgen auf eigenes Risiko des Nutzers.
+            Die App bindet Dienste Dritter ein, unter anderem Mapbox und Apple/Google für Kartendarstellung, Google für die
+            Ortssuche und Wegbeschreibungen, Geoapify für Kartenvorschaubilder, Google und Apple für die Anmeldung sowie
+            Expo, Apple und Google für die Zustellung von Push-Nachrichten. Eine vollständige Aufstellung mit den
+            datenschutzrechtlichen Angaben finden Sie in unserer{" "}
+            <Link href="/datenschutz" className="text-brand-green-700 hover:underline">
+              Datenschutzerklärung
+            </Link>
+            . Für Inhalte und Verfügbarkeit externer Dienste sind deren Betreiber verantwortlich. Links zu externen
+            Websites erfolgen auf eigenes Risiko des Nutzers.
           </p>
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">10. Kündigung</h3>
+          <h3 className="text-base font-bold text-slate-900">11. Kündigung</h3>
           <p>
-            Sie können Ihr Konto jederzeit in den Einstellungen unter „Konto löschen“ unwiderruflich beenden. Wir können Konten
-            bei schwerwiegenden Verstößen gegen diese Bedingungen sperren oder löschen. Mit Kontolöschung endet Ihr Nutzungsrecht.
+            Sie können Ihr Konto jederzeit in den Einstellungen unter „Daten &amp; Privatsphäre“ → „Konto löschen“
+            unwiderruflich beenden. Dabei werden Ihre Beiträge, Kommentare, Freundschaften und hochgeladenen Dateien
+            gelöscht; von anderen Personen erstellte Weitergaben bleiben nach Maßgabe von § 6 bestehen. Vor der Löschung
+            können Sie an derselben Stelle eine Kopie Ihrer Daten exportieren. Wir können Konten bei schwerwiegenden
+            Verstößen gegen diese Bedingungen sperren oder löschen. Mit Kontolöschung endet Ihr Nutzungsrecht.
           </p>
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">11. Änderungen</h3>
+          <h3 className="text-base font-bold text-slate-900">12. Änderungen</h3>
           <p>
             Wir können diese Nutzungsbedingungen anpassen, wenn sachliche Gründe dies erfordern (z. B. neue Funktionen,
             Rechtsänderungen). Über wesentliche Änderungen informieren wir in der App oder per E-Mail. Widersprechen Sie nicht
@@ -183,7 +271,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">12. Schlussbestimmungen</h3>
+          <h3 className="text-base font-bold text-slate-900">13. Schlussbestimmungen</h3>
           <p>
             Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts. Für Verbraucher gilt diese
             Rechtswahl nur, soweit dadurch keine zwingenden Verbraucherschutzvorschriften des Staates ihres gewöhnlichen

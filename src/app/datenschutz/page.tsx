@@ -26,7 +26,7 @@ export default function DatenschutzPage() {
           <Shield className="h-8 w-8 text-brand-green-700 shrink-0" />
           <div>
             <h2 className="font-bold text-slate-800">Datenschutz bei places4friends</h2>
-            <p className="text-xs text-slate-500">Stand: Juli 2026</p>
+            <p className="text-xs text-slate-500">Stand: August 2026</p>
           </div>
         </div>
 
@@ -74,8 +74,81 @@ export default function DatenschutzPage() {
 
           <h4 className="font-semibold text-slate-800">Freundschaftsbeziehungen und Interaktionen</h4>
           <p>
-            Die App verarbeitet Freundschaftsanfragen, angenommene Freundschaften, Kommentare zu Aktivitäten sowie Ihre
-            Merkliste. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+            Die App verarbeitet Freundschaftsanfragen und angenommene Freundschaften, Ihre Kommentare zu Empfehlungen,
+            das Markieren von Kommentaren als „gefällt mir“ sowie Ihre Merkliste (gespeicherte Empfehlungen anderer).
+            Zu jeder dieser Interaktionen speichern wir, wer sie ausgelöst hat, worauf sie sich bezieht und wann sie
+            erfolgt ist. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+          </p>
+          <p>
+            Aus organisatorischen Gründen ist die Zahl der Freundschaftsanfragen begrenzt (derzeit 50 pro 24 Stunden);
+            hierfür führen wir einen technischen Zähler zu Ihrem Konto. Offene Anfragen verfallen nach 60 Tagen.
+            Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (Schutz vor Missbrauch).
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Reposts (Weitergabe fremder Empfehlungen)</h4>
+          <p>
+            Sie können die Empfehlung einer befreundeten Person als eigenen Beitrag an Ihr eigenes Netzwerk weitergeben
+            („Repost“). Technisch entsteht dabei ein neuer, eigenständiger Beitrag in Ihrem Konto. Gespeichert werden
+            zusätzlich die Verknüpfung zum weitergegebenen Beitrag und die Nutzer-ID der Person, von der die Empfehlung
+            ursprünglich stammt, damit diese in der App als Urheberin genannt werden kann („Credits an …“). Diese
+            Urheberangabe bleibt auch dann bestehen, wenn der ursprüngliche Beitrag später gelöscht wird. Ebenfalls
+            gespeichert wird, wie oft ein Beitrag weitergegeben wurde. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+          </p>
+          <p>
+            Beim Repost werden die Bilder des ursprünglichen Beitrags nicht kopiert, sondern weiterverwendet; sie bleiben
+            also demselben Speicherobjekt zugeordnet. Wer eine Empfehlung veröffentlicht, kann die Weitergabe beim
+            Erstellen unterbinden (Funktion „Gatekeepen“). Was ein Repost für die Sichtbarkeit Ihrer Inhalte bedeutet,
+            beschreibt Abschnitt 4.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Melden und Blockieren</h4>
+          <p>
+            Melden Sie einen Beitrag, speichern wir den gemeldeten Beitrag, Ihre Nutzer-ID als meldende Person, den
+            Bearbeitungsstand und den Zeitpunkt. Blockieren Sie eine andere Person, speichern wir beide Nutzer-IDs und
+            den Zeitpunkt; bestehende Freundschaften und Anfragen zwischen Ihnen werden dabei automatisch aufgelöst.
+            Eine Blockierung ist für die blockierte Person nicht einsehbar und wird ihr auch im Rahmen einer
+            Datenauskunft nicht offengelegt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b und lit. f DSGVO.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Mitteilungen in der App</h4>
+          <p>
+            Zu Ereignissen in Ihrem Netzwerk (neue Empfehlung, Kommentar, Speicherung, Weitergabe, Freundschaftsanfrage
+            und -annahme) legen wir je Empfänger einen Eintrag im Mitteilungs-Bereich an. Gespeichert werden die Art des
+            Ereignisses, die auslösende Person, der betroffene Beitrag, Titel und Text der Mitteilung sowie der
+            Lesezeitpunkt. Diese Einträge entstehen unabhängig davon, ob Sie Push-Nachrichten aktiviert haben.
+            Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Freundschaftsvorschläge</h4>
+          <p>
+            Um Ihnen Personen vorzuschlagen, die Sie kennen könnten, wertet unser Server bestehende Freundschaften aus und
+            ermittelt Personen, mit denen Sie gemeinsame Freunde haben, sortiert nach deren Anzahl. Ausgeschlossen sind
+            dabei Sie selbst, bestehende Freundschaften und Anfragen sowie blockierte und gesperrte Konten. Angezeigt
+            werden nur Angaben, die ohnehin zum öffentlichen Profil gehören. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f
+            DSGVO (berechtigtes Interesse an der Vernetzungsfunktion einer sozialen App).
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Übernahme von Orten aus Google Maps</h4>
+          <p>
+            Sie können Orte aus Google Maps übernehmen, und zwar auf zwei Wegen. Teilen Sie einen Ort über die
+            Teilen-Funktion von Google Maps an die App, wird der enthaltene Kurzlink auf unserem Server aufgelöst und der
+            Ort ermittelt; dabei wird eine Anfrage an Google gerichtet. Alternativ können Sie die Datei Ihrer
+            Google-Bewertungen aus Google Takeout auswählen. Diese Datei wird ausschließlich auf Ihrem Gerät gelesen und
+            nicht an uns übertragen; gespeichert werden nur die Einträge, die Sie anschließend selbst als Empfehlung
+            veröffentlichen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Bestätigung der E-Mail-Adresse</h4>
+          <p>
+            Zur Bestätigung Ihrer Adresse erzeugen wir einen einmaligen Token mit Ablaufdatum und ordnen ihn Ihrem Konto
+            zu. Ein erneuter Versand ist auf eine Nachricht pro Minute begrenzt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b
+            und lit. f DSGVO (Schutz vor Missbrauch).
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Sperrung von Konten</h4>
+          <p>
+            Wird ein Konto wegen eines Verstoßes gegen unsere Nutzungsbedingungen gesperrt, vermerken wir den Zeitpunkt
+            der Sperrung am Profil. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO sowie Art. 6 Abs. 1 lit. c DSGVO.
           </p>
 
           <h4 className="font-semibold text-slate-800">Freundeseinladungen</h4>
@@ -87,14 +160,92 @@ export default function DatenschutzPage() {
 
           <h4 className="font-semibold text-slate-800">Hochgeladene Medien (Supabase Storage)</h4>
           <p>
-            Profilbilder werden im Speicherbereich „avatars“, Aktivitätsfotos im Bereich „activity-images“ abgelegt. Die
-            Dateien sind über öffentliche URLs abrufbar, sofern der Link bekannt ist. Rechtsgrundlage ist Art. 6 Abs. 1 lit.
-            b DSGVO.
+            Profilbilder werden im Speicherbereich „avatars“ abgelegt, Aktivitätsfotos und die automatisch erzeugten
+            Kartenvorschaubilder im Bereich „activity-images“. Beide Bereiche sind als öffentliche Speicher-Buckets
+            konfiguriert. Das bedeutet konkret: Die Dateien sind ohne Anmeldung abrufbar, sobald die vollständige
+            Datei-URL bekannt ist. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+          </p>
+          <p>
+            Der Speicher lässt sich nicht auflisten oder durchsuchen, und jeder Dateiname enthält eine zufällige,
+            nicht erratbare Komponente – die URLs sind also nicht öffentlich zugänglich, sondern nur demjenigen bekannt,
+            dem die App sie anzeigt. Wer eine solche URL jedoch einmal erhalten hat, kann die Datei weiterhin abrufen,
+            auch wenn der zugehörige Beitrag später nur noch einem eingeschränkten Empfängerkreis (z. B. Freunden)
+            angezeigt wird. Bitte berücksichtigen Sie das bei Fotos, die Sie als besonders sensibel empfinden.
+          </p>
+          <p>
+            Fotos werden vor dem Hochladen auf Ihrem Gerät verkleinert und neu als JPEG kodiert. Dabei werden die
+            Metadaten der Aufnahme (EXIF) entfernt, insbesondere die GPS-Koordinaten des Aufnahmeorts und die
+            Gerätekennung; diese Daten erreichen unsere Server nicht. Kann ein Foto auf dem Gerät nicht verarbeitet
+            werden, lehnen wir den Upload ab, statt die unveränderte Originaldatei zu übertragen.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Kontaktabgleich (nur mobile App)</h4>
+          <p>
+            In der mobilen App können Sie freiwillig Ihr Adressbuch mit places4friends abgleichen, um Kontakte zu finden,
+            die die App bereits nutzen. Der Abgleich erfolgt ausschließlich über Prüfsummen: Die E-Mail-Adressen Ihrer
+            Kontakte werden auf dem Gerät zu SHA-256-Hashwerten umgerechnet und nur diese Hashwerte werden übertragen und
+            mit den Hashwerten registrierter Nutzer verglichen. Die Kontaktdaten selbst verlassen Ihr Gerät nicht und
+            werden von uns nicht gespeichert. Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), die Sie
+            durch das Verweigern bzw. Entziehen der Kontaktberechtigung in den Geräteeinstellungen widerrufen können.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Push-Benachrichtigungen (nur mobile App)</h4>
+          <p>
+            Wenn Sie Push-Benachrichtigungen zulassen, speichern wir das von Ihrem Gerät ausgestellte Push-Token, um Sie
+            über Freundschaftsanfragen, Kommentare und neue Empfehlungen zu informieren. Beim Abmelden und beim Löschen des
+            Kontos wird das Token entfernt. Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), widerrufbar
+            in den Geräteeinstellungen bzw. über den Benachrichtigungsschalter in der App.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Lokale Speicherung in der mobilen App</h4>
+          <p>
+            Die mobile App speichert auf dem Gerät (AsyncStorage) Ihre Anmeldesitzung sowie Einstellungen wie Kartenansicht,
+            Sprachwahl, Fortschritt der Einführungstour und zuletzt verwendete Filter. Diese Daten verbleiben auf dem Gerät
+            und werden mit der Deinstallation entfernt.
           </p>
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">4. Moderation und Zugriff auf Inhalte</h3>
+          <h3 className="text-base font-bold text-slate-900">4. Sichtbarkeit Ihrer Inhalte</h3>
+          <p>
+            places4friends ist keine öffentliche Plattform: Empfehlungen, Kommentare und Merklisten sind grundsätzlich
+            nur für Sie und Ihre bestätigten Freundinnen und Freunde sichtbar. Diese Beschränkung wird serverseitig
+            durchgesetzt. Es gibt jedoch vier Fälle, in denen Angaben darüber hinaus sichtbar werden, und wir halten sie
+            hier ausdrücklich fest:
+          </p>
+          <ul className="list-disc pl-5 space-y-1 text-xs">
+            <li>
+              <strong>Profilangaben sind für alle angemeldeten Nutzer sichtbar.</strong> Benutzername, angezeigter Name
+              und Profilbild sind nicht auf Ihren Freundeskreis beschränkt – nur so lassen sich Personen finden,
+              Einladungen zuordnen und Urheberangaben anzeigen. Ihre Empfehlungen bleiben dabei verborgen; wer nicht mit
+              Ihnen befreundet ist, sieht auf Ihrem Profil den Hinweis, dass die Beiträge privat sind.
+            </li>
+            <li>
+              <strong>Reposts erweitern den Empfängerkreis.</strong> Gibt eine befreundete Person Ihre Empfehlung weiter,
+              erreicht deren Inhalt – Ortsangabe, Beschreibung und Bilder – auch die Freunde dieser Person, die Sie
+              nicht kennen müssen. Ihr Name wird dabei als Urheberin bzw. Urheber genannt und ist damit auch für
+              Personen sichtbar, mit denen Sie nicht befreundet sind. Ihre Kommentare wandern nicht mit: Ein Repost hat
+              einen eigenen Kommentarbereich, den nur das Netzwerk der weitergebenden Person sieht. Möchten Sie eine
+              Weitergabe ausschließen, aktivieren Sie beim Erstellen die Option „Gatekeepen“.
+            </li>
+            <li>
+              <strong>Hochgeladene Dateien liegen unter einer nicht öffentlich verlinkten Adresse.</strong> Wie in
+              Abschnitt 3 beschrieben, kann jede Person eine Bilddatei abrufen, die deren vollständige URL kennt –
+              unabhängig von einer Freundschaft und auch nach deren Ende.
+            </li>
+            <li>
+              <strong>Der Betreiber hat administrativen Zugriff</strong> zu Moderationszwecken; siehe Abschnitt 5.
+            </li>
+          </ul>
+          <p>
+            Blockieren Sie eine Person, werden Sie und diese Person einander in der App verborgen – einschließlich der
+            Profile, offener Anfragen und der wechselseitigen Kommentare unter Beiträgen gemeinsamer Freunde. Bereits
+            weitergegebene Inhalte lassen sich dadurch nicht zurückholen.
+          </p>
+        </section>
+
+        <section className="space-y-2">
+          <h3 className="text-base font-bold text-slate-900">5. Moderation und Zugriff auf Inhalte</h3>
           <p>
             Zur Gewährleistung eines sicheren und rechtskonformen Betriebs prüfen wir gemeldete Inhalte und moderieren
             die in der App eingestellten Beiträge. Nutzer können Inhalte und andere Nutzer über die Melde- und
@@ -118,7 +269,7 @@ export default function DatenschutzPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">5. Drittanbieter und Infrastruktur</h3>
+          <h3 className="text-base font-bold text-slate-900">6. Drittanbieter und Infrastruktur</h3>
 
           <h4 className="font-semibold text-slate-800">Vercel (Hosting)</h4>
           <p>
@@ -129,10 +280,11 @@ export default function DatenschutzPage() {
             gemäß Art. 28 DSGVO.
           </p>
 
-          <h4 className="font-semibold text-slate-800">Supabase (Backend, Datenbank und Authentifizierung)</h4>
+          <h4 className="font-semibold text-slate-800">Supabase (Backend, Datenbank, Speicher und Authentifizierung)</h4>
           <p>
-            Registrierungsdaten, Profildetails und Inhalte werden bei Supabase Inc. gespeichert. Wir streben die Nutzung von
-            Serverstandorten in der EU an. Mit Supabase besteht ein AVV gemäß Art. 28 DSGVO.
+            Registrierungsdaten, Profildetails, Inhalte und hochgeladene Dateien werden bei Supabase Inc. gespeichert. Das
+            genutzte Projekt liegt in der Region „eu-central-1“ (Frankfurt am Main, Deutschland); Datenbank und Dateispeicher
+            werden dort betrieben. Mit Supabase besteht ein AVV gemäß Art. 28 DSGVO.
           </p>
 
           <h4 className="font-semibold text-slate-800">Mapbox (Kartenvisualisierung)</h4>
@@ -148,6 +300,44 @@ export default function DatenschutzPage() {
             ausschließlich auf unseren Servern; der API-Schlüssel wird nicht im Browser ausgeliefert. Rechtsgrundlage ist Art.
             6 Abs. 1 lit. b DSGVO (Bereitstellung der Suchfunktion) bzw. Art. 6 Abs. 1 lit. f DSGVO. Mit Google besteht ein
             AVV gemäß Art. 28 DSGVO, soweit erforderlich.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Anmeldung mit Google oder Apple</h4>
+          <p>
+            Sie können sich alternativ mit einem Google- oder Apple-Konto anmelden. Dabei übermittelt der jeweilige
+            Anbieter (Google Ireland Limited bzw. Apple Distribution International Ltd.) an uns ein Anmelde-Token sowie
+            Ihre E-Mail-Adresse und, sofern vorhanden, Ihren Namen und Ihr Profilbild. Bei „Mit Apple anmelden“ können Sie
+            Ihre Adresse verbergen; wir erhalten dann eine Weiterleitungsadresse von Apple. Rechtsgrundlage ist Art. 6
+            Abs. 1 lit. b DSGVO.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Auflösen geteilter Google-Maps-Links</h4>
+          <p>
+            Teilen Sie einen Ort aus Google Maps an die App, ruft unser Server den enthaltenen Kurzlink ab, um den Ort zu
+            bestimmen. Dabei erfährt Google, dass dieser Link abgerufen wurde; Ihre IP-Adresse wird nicht übermittelt, da
+            die Anfrage von unserem Server ausgeht. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Geoapify (Kartenvorschaubilder)</h4>
+          <p>
+            Für die kleine Kartenvorschau auf einer Empfehlung erzeugen wir serverseitig ein statisches Kartenbild über die
+            Geoapify GmbH, Gersthofen, Deutschland. Dabei werden die Koordinaten des empfohlenen Ortes an Geoapify
+            übermittelt; ein Personenbezug wird nicht mitgeteilt. Das erzeugte Bild wird in unserem eigenen Speicher
+            abgelegt, sodass pro Ort nur einmal angefragt wird. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Resend (Versand von Bestätigungs-E-Mails)</h4>
+          <p>
+            Zur Bestätigung Ihrer E-Mail-Adresse versenden wir eine Nachricht über Resend, Inc. (USA). Dabei werden Ihre
+            E-Mail-Adresse und der Bestätigungslink an Resend übermittelt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Expo, Apple und Google (Zustellung von Push-Nachrichten)</h4>
+          <p>
+            Push-Nachrichten der mobilen App werden über den Dienst von Expo (650 Industries, Inc., USA) an die
+            Zustellsysteme von Apple (APNs) bzw. Google (FCM) übergeben. Übermittelt werden das Push-Token Ihres Geräts
+            sowie Titel und Text der Benachrichtigung, die den Anlass benennen (z. B. den Namen einer Person oder eines
+            Ortes). Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).
           </p>
 
           <h4 className="font-semibold text-slate-800">Ungefährer Standort beim Kartenstart</h4>
@@ -166,8 +356,9 @@ export default function DatenschutzPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">6. Cookies und lokale Speicherung</h3>
+          <h3 className="text-base font-bold text-slate-900">7. Cookies und lokale Speicherung</h3>
           <p>
+            Die folgenden Angaben betreffen die Nutzung im Browser; zur Speicherung in der mobilen App siehe Abschnitt 3.
             Wir setzen technisch notwendige Session-Cookies ein (Supabase-Authentifizierung), um Sie angemeldet zu halten.
             Darüber hinaus speichern wir in Ihrem Browser lokal (localStorage bzw. sessionStorage) unter anderem:
           </p>
@@ -185,27 +376,30 @@ export default function DatenschutzPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">7. Speicherdauer</h3>
+          <h3 className="text-base font-bold text-slate-900">8. Speicherdauer</h3>
           <p>
             Personenbezogene Daten speichern wir, solange Ihr Konto besteht. Nach Löschung Ihres Kontos werden Ihre Daten
-            gelöscht, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen. IP-basierte Zwischenwerte im
-            Server-Arbeitsspeicher werden nach höchstens einer Stunde verworfen. Einladungslinks verfallen nach Ablauf der
-            jeweiligen Gültigkeitsdauer.
+            gelöscht, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Löschen Sie einen einzelnen Beitrag
+            oder Ihr Profilbild, werden die zugehörigen Dateien aus dem Speicher entfernt; bereits an Endgeräte
+            ausgelieferte Kopien in deren Zwischenspeichern (Caches) entziehen sich unserem Zugriff. IP-basierte
+            Zwischenwerte im Server-Arbeitsspeicher werden nach höchstens einer Stunde verworfen. Einladungslinks verfallen
+            nach Ablauf der jeweiligen Gültigkeitsdauer. Push-Token werden beim Abmelden entfernt.
           </p>
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">8. Drittlandübermittlung</h3>
+          <h3 className="text-base font-bold text-slate-900">9. Drittlandübermittlung</h3>
           <p>
-            Einige der genannten Anbieter (z. B. Mapbox, Google, Supabase, Vercel, ipapi.co) haben ihren Sitz in den USA
-            oder verarbeiten Daten auch dort. Für Übermittlungen in Drittländer setzen wir geeignete Garantien ein, insbesondere
-            Standardvertragsklauseln der EU-Kommission (Art. 46 DSGVO), und schließen mit Auftragsverarbeitern Verträge gemäß
-            Art. 28 DSGVO ab.
+            Einige der genannten Anbieter (z. B. Mapbox, Google, Supabase, Vercel, Resend, Expo, ipapi.co) haben ihren Sitz
+            in den USA oder verarbeiten Daten auch dort. Das gilt auch dann, wenn die Daten – wie bei Supabase – auf
+            Servern in der EU liegen, weil ein administrativer Zugriff aus den USA nicht ausgeschlossen werden kann. Für
+            Übermittlungen in Drittländer setzen wir geeignete Garantien ein, insbesondere Standardvertragsklauseln der
+            EU-Kommission (Art. 46 DSGVO), und schließen mit Auftragsverarbeitern Verträge gemäß Art. 28 DSGVO ab.
           </p>
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">9. Ihre Rechte</h3>
+          <h3 className="text-base font-bold text-slate-900">10. Ihre Rechte</h3>
           <p>Sie haben im Rahmen der DSGVO folgende Rechte:</p>
           <ul className="list-disc pl-5 space-y-1 text-xs">
             <li>Auskunft (Art. 15 DSGVO)</li>
@@ -217,9 +411,22 @@ export default function DatenschutzPage() {
             <li>Beschwerde bei einer Aufsichtsbehörde (Art. 77 DSGVO)</li>
           </ul>
           <p className="mt-2">
-            <strong>In der App:</strong> Unter Profil → Einstellungen können Sie Ihre Daten in den Bereichen „Deine Daten“
-            als JSON-Datei exportieren und Ihr Konto in der Gefahrenzone unwiderruflich löschen. Profildaten können Sie dort
-            ebenfalls bearbeiten.
+            <strong>In der App:</strong> Unter Profil → Einstellungen → „Daten &amp; Privatsphäre“ können Sie Ihre Daten als
+            JSON-Datei exportieren und Ihr Konto unwiderruflich löschen. Profildaten können Sie dort ebenfalls bearbeiten.
+          </p>
+          <p>
+            Der Export enthält alle Datensätze, die Ihrem Konto in unserer Datenbank zugeordnet sind: Profil, Ihre
+            Empfehlungen (einschließlich Reposts) mit den Links zu den zugehörigen Bilddateien, Ihre Kommentare und
+            Kommentar-Likes, Freundschaften und -anfragen, Merkliste, Einladungslinks, Ihre Mitteilungen, registrierte
+            Geräte, von Ihnen erstattete Meldungen, von Ihnen ausgesprochene Blockierungen sowie die technischen Einträge
+            zu E-Mail-Bestätigung, Kontaktabgleich und Nutzungszählern.
+          </p>
+          <p>
+            Nicht enthalten sind Daten, die zugleich Daten anderer Personen sind (Art. 15 Abs. 4 DSGVO): Kommentare
+            anderer unter Ihren Beiträgen, Reposts Ihrer Empfehlungen durch andere, Meldungen über Ihre Beiträge sowie
+            Blockierungen, die andere gegen Sie ausgesprochen haben. Sicherheits-Token (Push-Token, Bestätigungs-Token)
+            sind als „[redacted]“ gekennzeichnet, da sie Zugangsmittel und keine Information über Sie sind. Die Datei
+            benennt diese Einschränkungen selbst in einem Abschnitt „notes“.
           </p>
           <p>
             Für weitere Anfragen (z. B. Auskunft oder Widerspruch) wenden Sie sich an{" "}
