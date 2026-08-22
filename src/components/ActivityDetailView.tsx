@@ -26,6 +26,7 @@ import ActivityCard from "./ActivityCard";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import ActivityPhoto from "@/components/ui/ActivityPhoto";
 import { getAvatarUrl } from "@/lib/avatar";
+import { uploadActivityImages } from "@/lib/activityImages";
 
 interface User {
   id: string;
@@ -303,24 +304,13 @@ export default function ActivityDetailView({
     setIsSaving(true);
     setActionError(null);
     try {
-      const uploadedUrls: string[] = [];
+      let uploadedUrls: string[] = [];
       if (editNewFiles.length > 0) {
-        for (const entry of editNewFiles) {
-          const fileExt = entry.file.name.split(".").pop();
-          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-          const { error: uploadError } = await supabase.storage
-            .from("activity-images")
-            .upload(fileName, entry.file);
-
-          if (uploadError) {
-            throw new Error(`Fehler beim Hochladen eines Bildes: ${uploadError.message}`);
-          }
-
-          const {
-            data: { publicUrl },
-          } = supabase.storage.from("activity-images").getPublicUrl(fileName);
-          uploadedUrls.push(publicUrl);
-        }
+        uploadedUrls = await uploadActivityImages(
+          supabase,
+          currentUserId,
+          editNewFiles.map((entry) => entry.file)
+        );
       }
 
       const existingUrls = editImageUrls.filter((url) => !url.startsWith("blob:"));

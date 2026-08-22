@@ -15,6 +15,7 @@ import LegalFooter from "./LegalFooter";
 import { useInfiniteScroll } from "@/lib/useInfiniteScroll";
 import { ActivityCardSkeleton } from "@/components/ui/Skeleton";
 import { getAvatarUrl } from "@/lib/avatar";
+import { uploadActivityImages } from "@/lib/activityImages";
 import VerificationBanner from "./VerificationBanner";
 
 interface User {
@@ -613,24 +614,14 @@ export default function ProfileView({
     setActionError(null);
     try {
       // 1. Upload new files
-      const uploadedUrls: string[] = [];
+      let uploadedUrls: string[] = [];
       if (editNewFiles.length > 0) {
-        for (const entry of editNewFiles) {
-          const fileExt = entry.file.name.split(".").pop();
-          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-          const { error: uploadError } = await supabase.storage
-            .from("activity-images")
-            .upload(fileName, entry.file);
-
-          if (uploadError) {
-            throw new Error(`Fehler beim Hochladen eines Bildes: ${uploadError.message}`);
-          }
-
-          const {
-            data: { publicUrl },
-          } = supabase.storage.from("activity-images").getPublicUrl(fileName);
-          uploadedUrls.push(publicUrl);
-        }
+        if (!user) throw new Error("Nicht angemeldet.");
+        uploadedUrls = await uploadActivityImages(
+          supabase,
+          user.id,
+          editNewFiles.map((entry) => entry.file)
+        );
       }
 
       // 2. Combine existing non-blob URLs and newly uploaded URLs

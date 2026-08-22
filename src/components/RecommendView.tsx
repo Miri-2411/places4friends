@@ -20,6 +20,7 @@ import {
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { authenticatedFetch } from "@/lib/auth/authenticatedFetch";
+import { uploadActivityImages } from "@/lib/activityImages";
 import {
   FALLBACK_VIEWPORT,
   ZOOM_DETAIL,
@@ -482,19 +483,8 @@ export default function RecommendView() {
 
     try {
       if (selectedFiles.length > 0) {
-        const supabase = createClient();
-        for (const file of selectedFiles) {
-          const fileExt = file.name.split(".").pop();
-          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-          const { error: uploadError } = await supabase.storage
-            .from("activity-images")
-            .upload(fileName, file);
-          if (uploadError) throw new Error(`Fehler beim Hochladen eines Bildes: ${uploadError.message}`);
-          const {
-            data: { publicUrl },
-          } = supabase.storage.from("activity-images").getPublicUrl(fileName);
-          uploadedUrls.push(publicUrl);
-        }
+        if (!authUserId) throw new Error("Nicht angemeldet.");
+        uploadedUrls = await uploadActivityImages(createClient(), authUserId, selectedFiles);
       }
 
       const response = await authenticatedFetch("/api/recommendations", {
