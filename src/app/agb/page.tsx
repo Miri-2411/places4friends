@@ -251,7 +251,38 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">9. Verfügbarkeit</h3>
+          <h3 className="text-base font-bold text-slate-900">9. Content Creator</h3>
+          <p>
+            Nutzerinnen und Nutzer können sich in den Einstellungen um den Status „Content Creator“ bewerben. Einzige
+            Voraussetzung ist ein gesetzter Benutzername; eine Begründung und die Angabe von Social-Media-Profilen sind
+            freiwillig. Über die Bewerbung entscheiden wir nach billigem Ermessen; ein Anspruch auf Freischaltung
+            besteht nicht. Wir können den Status jederzeit wieder entziehen, insbesondere bei Verstößen gegen diese
+            Bedingungen. Über die Entscheidung und über einen Entzug informieren wir Sie in der App.
+          </p>
+          <p>
+            <strong>Was der Status bedeutet.</strong> Ihr Profil wird für alle angemeldeten Nutzer sichtbar: Ihre
+            Empfehlungen, die Kommentare darunter sowie die Angabe, wer sie gespeichert und wer sie weitergegeben hat.
+            Diese Öffnung wirkt <strong>rückwirkend</strong> und erfasst auch Beiträge und Kommentare aus der Zeit vor
+            der Freischaltung – auch solche, die andere Personen unter Ihren Beiträgen verfasst haben. Andere Nutzer
+            können Ihnen mit einem Tippen folgen, ohne dass Sie zustimmen müssen; es entsteht dabei eine gewöhnliche
+            Freundschaft, die beide Seiten jederzeit beenden können. Umgekehrt müssen Sie niemandem folgen: Schicken
+            Sie selbst eine Anfrage, muss die andere Person sie wie sonst auch bestätigen. Wer Ihnen folgt, ist für
+            Dritte nicht einsehbar – öffentlich ist nur die Anzahl. Mit der Bewerbung erklären Sie sich mit dieser
+            Sichtbarkeit einverstanden und versichern erneut, über die erforderlichen Rechte an Ihren Inhalten zu
+            verfügen (§ 5).
+          </p>
+          <p>
+            <strong>Kennzeichnung von Werbung.</strong> Veröffentlichen Sie Empfehlungen, für die Sie eine Gegenleistung
+            erhalten – Geld, Rabatte, kostenlose Leistungen oder sonstige Vorteile –, müssen Sie diese als Werbung
+            kennzeichnen. Das ist keine Regel, die wir uns ausgedacht haben, sondern eine gesetzliche Pflicht (§ 5a
+            Abs. 4 UWG); auf sie hinzuweisen ist unsere. Eine Kennzeichnung genügt, wenn sie klar erkennbar am Anfang
+            der Beschreibung steht, etwa mit „Werbung“ oder „Anzeige“. Nicht gekennzeichnete Werbung können wir
+            entfernen und den Status entziehen.
+          </p>
+        </section>
+
+        <section className="space-y-2">
+          <h3 className="text-base font-bold text-slate-900">10. Verfügbarkeit</h3>
           <p>
             Wir bemühen uns um eine hohe Verfügbarkeit, garantieren diese jedoch nicht. Wartung, Updates oder Störungen bei
             Drittanbietern (z. B. Hosting, Karten) können zu vorübergehenden Einschränkungen führen. Die App kann sich noch in
@@ -260,7 +291,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">10. Haftung und externe Dienste</h3>
+          <h3 className="text-base font-bold text-slate-900">11. Haftung und externe Dienste</h3>
           <p>
             Wir haften unbeschränkt bei Vorsatz und grober Fahrlässigkeit sowie bei Schäden aus der Verletzung von Leben,
             Körper oder Gesundheit. Im Übrigen haften wir nur bei Verletzung wesentlicher Vertragspflichten, beschränkt auf den
@@ -281,7 +312,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">11. Kündigung</h3>
+          <h3 className="text-base font-bold text-slate-900">12. Kündigung</h3>
           <p>
             Sie können Ihr Konto jederzeit in den Einstellungen unter „Daten &amp; Privatsphäre“ → „Konto löschen“
             unwiderruflich beenden. Dabei werden Ihre Beiträge, Kommentare, Freundschaften und hochgeladenen Dateien
@@ -292,7 +323,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">12. Änderungen</h3>
+          <h3 className="text-base font-bold text-slate-900">13. Änderungen</h3>
           <p>
             Wir können diese Nutzungsbedingungen anpassen, wenn sachliche Gründe dies erfordern (z. B. neue Funktionen,
             Rechtsänderungen). Über wesentliche Änderungen informieren wir in der App oder per E-Mail. Widersprechen Sie nicht
@@ -302,7 +333,7 @@ export default function AgbPage() {
         </section>
 
         <section className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900">13. Schlussbestimmungen</h3>
+          <h3 className="text-base font-bold text-slate-900">14. Schlussbestimmungen</h3>
           <p>
             Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts. Für Verbraucher gilt diese
             Rechtswahl nur, soweit dadurch keine zwingenden Verbraucherschutzvorschriften des Staates ihres gewöhnlichen

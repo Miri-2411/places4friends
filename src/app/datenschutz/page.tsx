@@ -122,6 +122,18 @@ export default function DatenschutzPage() {
             Datenauskunft nicht offengelegt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b und lit. f DSGVO.
           </p>
 
+          <h4 className="font-semibold text-slate-800">Bewerbung als Content Creator</h4>
+          <p>
+            Bewerben Sie sich um den Content-Creator-Status, speichern wir Ihre Nutzer-ID, Ihre freiwillige
+            Begründung, die zu diesem Zeitpunkt in Ihrem Profil hinterlegten Instagram- und TikTok-Benutzernamen
+            (als unveränderlichen Schnappschuss, damit eine spätere Änderung die Entscheidungsgrundlage nicht
+            nachträglich verschiebt), den Zeitpunkt sowie unsere Entscheidung nebst Datum und einer etwaigen Notiz
+            an Sie. Voraussetzung ist allein ein gesetzter Benutzername. Über das Ergebnis informieren wir Sie im
+            Mitteilungsbereich der App. Bewerbungen und Entscheidungen sind Teil der Datenauskunft, die Sie in den
+            Einstellungen exportieren können. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Durchführung
+            vorvertraglicher Maßnahmen auf Ihre Anfrage) sowie Art. 6 Abs. 1 lit. f DSGVO.
+          </p>
+
           <h4 className="font-semibold text-slate-800">Entscheidungen über Inhalte</h4>
           <p>
             Entfernen wir einen Ihrer Inhalte, setzen wir einzelne Profilangaben zurück oder sperren wir Ihr Konto,
@@ -234,7 +246,7 @@ export default function DatenschutzPage() {
           <p>
             places4friends ist keine öffentliche Plattform: Empfehlungen, Kommentare und Merklisten sind grundsätzlich
             nur für Sie und Ihre bestätigten Freundinnen und Freunde sichtbar. Diese Beschränkung wird serverseitig
-            durchgesetzt. Es gibt jedoch fünf Fälle, in denen Angaben darüber hinaus sichtbar werden, und wir halten
+            durchgesetzt. Es gibt jedoch sechs Fälle, in denen Angaben darüber hinaus sichtbar werden, und wir halten
             sie hier ausdrücklich fest:
           </p>
           <ul className="list-disc pl-5 space-y-1 text-xs">
@@ -255,7 +267,22 @@ export default function DatenschutzPage() {
               betrachtende Person befreundet sind. Wer mit niemandem aus Ihrem Freundeskreis befreundet ist, sieht an
               dieser Stelle niemanden. Diese Anzeige ist der Zweck der Funktion: Sie soll einordnen helfen, wer Ihnen
               eine Anfrage schickt. Umgekehrt heißt das, dass eine Freundschaft zwischen Ihnen und einer anderen Person
-              auch für Dritte erkennbar sein kann, sofern diese mit einer der beiden Personen befreundet sind.
+              auch für Dritte erkennbar sein kann, sofern diese mit einer der beiden Personen befreundet sind. Davon
+              ausgenommen sind Freundschaften mit einem Content Creator: sie erscheinen weder in Ihrer Freundesliste,
+              wie Dritte sie sehen, noch bei den gemeinsamen Freundinnen und Freunden. Andernfalls ließe sich aus den
+              Listen einzelner Personen rekonstruieren, wer einem Content Creator folgt.
+            </li>
+            <li>
+              <strong>Das Profil eines Content Creators ist öffentlich.</strong> Wir können ein Konto auf Antrag oder von
+              uns aus als „Content Creator“ freischalten und diesen Status jederzeit wieder entziehen. Solange er
+              besteht, sind die Empfehlungen dieses Kontos, die Kommentare darunter sowie die Listen, wer sie
+              gespeichert und wer sie weitergegeben hat, für <em>alle</em> angemeldeten Nutzer sichtbar – nicht nur für
+              den Freundeskreis. Das gilt <strong>rückwirkend</strong>, also auch für Beiträge und Kommentare, die vor
+              der Freischaltung entstanden sind; wer unter dem Beitrag eines später freigeschalteten Kontos kommentiert
+              hat, dessen Kommentar wird damit ebenfalls öffentlich. Andere Nutzer können einem Content Creator mit
+              einem Tippen folgen, ohne dass dieser zustimmen muss. Wer einem Content Creator folgt, ist für andere
+              nicht einsehbar – sichtbar ist nur die Anzahl. Auf der Karte und im Aktivitäten-Feed erscheinen die
+              Beiträge eines Content Creators weiterhin erst, wenn Sie ihm folgen.
             </li>
             <li>
               <strong>Reposts erweitern den Empfängerkreis.</strong> Gibt eine befreundete Person Ihre Empfehlung weiter,
