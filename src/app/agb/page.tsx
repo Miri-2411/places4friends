@@ -26,7 +26,7 @@ export default function AgbPage() {
           <Scale className="h-8 w-8 text-brand-green-700 shrink-0" />
           <div>
             <h2 className="font-bold text-slate-800">Nutzungsbedingungen</h2>
-            <p className="text-xs text-slate-500">Stand: August 2026</p>
+            <p className="text-xs text-slate-500">Stand: September 2026</p>
           </div>
         </div>
 
@@ -59,11 +59,13 @@ export default function AgbPage() {
             insbesondere die Weitergabe fremder Empfehlungen an das eigene Netzwerk („Repost“, siehe § 6), das Hervorheben
             einzelner Empfehlungen als „Must-See“, Mitteilungen zu Ereignissen im eigenen Netzwerk (in der App und
             optional als Push-Nachricht), persönliche Einladungslinks, Freundschaftsvorschläge, ein freiwilliger Abgleich
-            des Adressbuchs sowie die Übernahme von Orten aus Google Maps.
+            des Adressbuchs, optionale Verweise auf das eigene Instagram- oder TikTok-Profil sowie die Übernahme von Orten
+            aus Google Maps.
           </p>
           <p>
             Empfehlungen, Kommentare und Merklisten sind grundsätzlich nur für Sie und Ihre bestätigten Freundinnen und
-            Freunde sichtbar; Profilangaben (Benutzername, Name, Profilbild) sind für alle angemeldeten Nutzer sichtbar.
+            Freunde sichtbar; Profilangaben (Benutzername, Name, Profilbild, Kurzbeschreibung und die von Ihnen
+            angegebenen Social-Media-Benutzernamen) sind für alle angemeldeten Nutzer sichtbar.
             Welche Ausnahmen es davon gibt, beschreibt Abschnitt 4 unserer{" "}
             <Link href="/datenschutz" className="text-brand-green-700 hover:underline">
               Datenschutzerklärung
@@ -105,12 +107,28 @@ export default function AgbPage() {
               Gewalt gegen Personen oder Gruppen aufstachelnde Inhalte zu veröffentlichen
             </li>
             <li>andere Nutzer zu belästigen, zu bedrohen, zu mobben, bloßzustellen oder zu diskriminieren</li>
+            <li>
+              sich als eine andere Person, ein Unternehmen oder eine Organisation auszugeben oder auf andere Weise eine
+              falsche Identität vorzutäuschen – etwa durch fremde Namen, fremde Profilbilder oder fremde Angaben in der
+              Kurzbeschreibung
+            </li>
             <li>sonstige rechtswidrige, beleidigende oder irreführende Inhalte zu veröffentlichen</li>
             <li>Rechte Dritter (z. B. Urheber-, Marken- oder Persönlichkeitsrechte) zu verletzen</li>
             <li>die technische Infrastruktur zu stören, auszuspähen oder unbefugt zuzugreifen</li>
             <li>automatisierte Abfragen (Scraping) ohne unsere Zustimmung durchzuführen</li>
             <li>die App für kommerzielle Werbung ohne vorherige Absprache zu nutzen</li>
           </ul>
+          <p>
+            <strong>Verweise auf Social-Media-Profile.</strong> Sie können in Ihrem Profil freiwillig einen Instagram-
+            und einen TikTok-Benutzernamen angeben; die App zeigt daraus eine Schaltfläche, die den genannten
+            Benutzernamen anzeigt und beim Antippen das entsprechende Profil im jeweiligen Netzwerk öffnet. Sie dürfen
+            dort ausschließlich Konten angeben, die Ihnen selbst gehören oder die Sie nachweislich betreiben dürfen. Eine
+            Überprüfung durch uns findet nicht statt – wir speichern und zeigen lediglich den Benutzernamen, den Sie
+            eingetragen haben. Das Angeben eines fremden Kontos ist ein Verstoß gegen diese Bedingungen und kann
+            zusätzlich Rechte der betroffenen Person verletzen. Instagram und TikTok sind Marken der jeweiligen
+            Unternehmen; die Nennung dient allein der Kennzeichnung des verlinkten Netzwerks, eine Verbindung zu oder
+            eine Unterstützung durch diese Unternehmen besteht nicht.
+          </p>
           <p>
             Für rechtswidrige oder anstößige Inhalte sowie für belästigendes Verhalten gegenüber anderen Nutzern gilt
             eine Null-Toleranz-Politik. Derartige Inhalte werden entfernt und die verantwortlichen Konten können ohne
@@ -179,11 +197,24 @@ export default function AgbPage() {
         <section className="space-y-2">
           <h3 className="text-base font-bold text-slate-900">7. Moderation, Meldungen und Zugriff durch den Betreiber</h3>
           <p>
-            Nutzer können Inhalte und andere Nutzer über die in der App bereitgestellte Melde- und Blockierfunktion
-            melden bzw. blockieren. Wir prüfen eingehende Meldungen und bemühen uns um eine zeitnahe Bearbeitung;
-            rechtswidrige oder gegen diese Bedingungen verstoßende Inhalte werden entfernt. Eine Blockierung wirkt
-            wechselseitig: Sie und die blockierte Person werden einander in der App verborgen, und bestehende
-            Freundschaften und Anfragen zwischen Ihnen werden aufgelöst.
+            Nutzer können sowohl einzelne Beiträge als auch ganze Profile über die in der App bereitgestellte
+            Meldefunktion melden und andere Nutzer blockieren. Beim Melden geben Sie einen Grund an und können den
+            Sachverhalt ergänzen; das ist zugleich die Angabe, die Art. 16 der Verordnung über digitale Dienste für eine
+            wirksame Meldung vorsieht. Wir prüfen eingehende Meldungen und bemühen uns um eine zeitnahe Bearbeitung;
+            rechtswidrige oder gegen diese Bedingungen verstoßende Inhalte werden entfernt. Über das Ergebnis der
+            Prüfung informieren wir Sie als meldende Person in jedem Fall – auch dann, wenn wir keinen Verstoß
+            feststellen konnten. Eine Blockierung wirkt dagegen nur zwischen Ihnen beiden: Sie und die blockierte Person
+            werden einander in der App verborgen und bestehende Freundschaften und Anfragen zwischen Ihnen werden
+            aufgelöst; eine Meldung ersetzt das nicht und umgekehrt.
+          </p>
+          <p>
+            Entfernen wir einen Ihrer Inhalte, setzen wir einzelne Angaben in Ihrem Profil zurück oder sperren wir Ihr
+            Konto, teilen wir Ihnen die Entscheidung mit einer Begründung mit. Diese nennt die getroffene Maßnahme, den
+            Grund, ob wir uns auf diese Nutzungsbedingungen oder auf geltendes Recht stützen, ob eine Meldung oder eine
+            eigene Prüfung Anlass war, ob dabei automatisierte Mittel eingesetzt wurden, und wie Sie widersprechen
+            können. Die Mitteilung erreicht Sie im Mitteilungsbereich der App; ist Ihr Konto gesperrt und damit die App
+            für Sie nicht mehr zugänglich, senden wir sie zusätzlich an Ihre hinterlegte E-Mail-Adresse. Eine Kopie
+            dieser Entscheidungen ist Teil der Datenauskunft, die Sie in den Einstellungen jederzeit exportieren können.
           </p>
           <p>
             Sind Sie mit einer Entscheidung über eine Meldung, mit der Entfernung eines Ihrer Inhalte oder mit der

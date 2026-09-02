@@ -26,7 +26,7 @@ export default function DatenschutzPage() {
           <Shield className="h-8 w-8 text-brand-green-700 shrink-0" />
           <div>
             <h2 className="font-bold text-slate-800">Datenschutz bei places4friends</h2>
-            <p className="text-xs text-slate-500">Stand: August 2026</p>
+            <p className="text-xs text-slate-500">Stand: September 2026</p>
           </div>
         </div>
 
@@ -62,7 +62,13 @@ export default function DatenschutzPage() {
           <h4 className="font-semibold text-slate-800">Registrierung und Profil</h4>
           <p>
             Bei der Registrierung verarbeiten wir Ihre E-Mail-Adresse, Ihren Namen (sofern angegeben), Ihren Benutzernamen
-            sowie Ihr Profilbild. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung).
+            sowie Ihr Profilbild. Freiwillig können Sie Ihr Profil um eine Kurzbeschreibung und um je einen
+            Instagram- und TikTok-Benutzernamen ergänzen. Diese Angaben speichern wir unverändert so, wie Sie sie
+            eingeben; wir prüfen nicht, ob ein angegebenes Social-Media-Konto Ihnen gehört, und rufen die genannten
+            Netzwerke nicht ab. Erst wenn jemand die Schaltfläche in Ihrem Profil antippt, öffnet dessen Gerät die
+            Adresse des jeweiligen Netzwerks; ab diesem Zeitpunkt gilt die Datenschutzerklärung von Instagram bzw.
+            TikTok. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung), für die freiwilligen Angaben
+            Art. 6 Abs. 1 lit. a DSGVO (Einwilligung) – Sie können sie in den Einstellungen jederzeit wieder entfernen.
           </p>
 
           <h4 className="font-semibold text-slate-800">Empfehlungen und Aktivitäten</h4>
@@ -78,6 +84,10 @@ export default function DatenschutzPage() {
             das Markieren von Kommentaren als „gefällt mir“ sowie Ihre Merkliste (gespeicherte Empfehlungen anderer).
             Zu jeder dieser Interaktionen speichern wir, wer sie ausgelöst hat, worauf sie sich bezieht und wann sie
             erfolgt ist. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+          </p>
+          <p>
+            Angenommene Freundschaften sind dabei nicht nur für die beiden beteiligten Personen sichtbar – Näheres dazu
+            in Abschnitt 4.
           </p>
           <p>
             Aus organisatorischen Gründen ist die Zahl der Freundschaftsanfragen begrenzt (derzeit 50 pro 24 Stunden);
@@ -103,11 +113,25 @@ export default function DatenschutzPage() {
 
           <h4 className="font-semibold text-slate-800">Melden und Blockieren</h4>
           <p>
-            Melden Sie einen Beitrag, speichern wir den gemeldeten Beitrag, Ihre Nutzer-ID als meldende Person, den
-            Bearbeitungsstand und den Zeitpunkt. Blockieren Sie eine andere Person, speichern wir beide Nutzer-IDs und
+            Melden Sie einen Beitrag oder ein Profil, speichern wir den gemeldeten Beitrag bzw. die gemeldete Person,
+            Ihre Nutzer-ID als meldende Person, den von Ihnen gewählten Grund und Ihre optionale Ergänzung, den
+            Bearbeitungsstand und den Zeitpunkt. Über das Ergebnis der Prüfung erhalten Sie eine Mitteilung in der App.
+            Ihre Identität als meldende Person geben wir dabei nicht an die gemeldete Person weiter. Blockieren Sie eine andere Person, speichern wir beide Nutzer-IDs und
             den Zeitpunkt; bestehende Freundschaften und Anfragen zwischen Ihnen werden dabei automatisch aufgelöst.
             Eine Blockierung ist für die blockierte Person nicht einsehbar und wird ihr auch im Rahmen einer
             Datenauskunft nicht offengelegt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b und lit. f DSGVO.
+          </p>
+
+          <h4 className="font-semibold text-slate-800">Entscheidungen über Inhalte</h4>
+          <p>
+            Entfernen wir einen Ihrer Inhalte, setzen wir einzelne Profilangaben zurück oder sperren wir Ihr Konto,
+            speichern wir dazu einen Eintrag: die Maßnahme, den betroffenen Beitrag (samt seiner Bezeichnung zum
+            Zeitpunkt der Entfernung), den Grund, ob wir uns auf unsere Nutzungsbedingungen oder auf geltendes Recht
+            stützen, ob eine Meldung oder eine eigene Prüfung Anlass war, ob automatisierte Mittel eingesetzt wurden,
+            eine etwaige Erläuterung und den Zeitpunkt. Dieser Eintrag ist die Begründung, die Art. 17 der Verordnung
+            über digitale Dienste vorsieht; Sie können ihn jederzeit über die Datenauskunft in den Einstellungen
+            abrufen. Wer die Meldung eingereicht hat, ist darin nicht enthalten. Rechtsgrundlage ist Art. 6 Abs. 1
+            lit. c DSGVO (rechtliche Verpflichtung) sowie Art. 6 Abs. 1 lit. f DSGVO.
           </p>
 
           <h4 className="font-semibold text-slate-800">Mitteilungen in der App</h4>
@@ -210,15 +234,28 @@ export default function DatenschutzPage() {
           <p>
             places4friends ist keine öffentliche Plattform: Empfehlungen, Kommentare und Merklisten sind grundsätzlich
             nur für Sie und Ihre bestätigten Freundinnen und Freunde sichtbar. Diese Beschränkung wird serverseitig
-            durchgesetzt. Es gibt jedoch vier Fälle, in denen Angaben darüber hinaus sichtbar werden, und wir halten sie
-            hier ausdrücklich fest:
+            durchgesetzt. Es gibt jedoch fünf Fälle, in denen Angaben darüber hinaus sichtbar werden, und wir halten
+            sie hier ausdrücklich fest:
           </p>
           <ul className="list-disc pl-5 space-y-1 text-xs">
             <li>
-              <strong>Profilangaben sind für alle angemeldeten Nutzer sichtbar.</strong> Benutzername, angezeigter Name
-              und Profilbild sind nicht auf Ihren Freundeskreis beschränkt – nur so lassen sich Personen finden,
-              Einladungen zuordnen und Urheberangaben anzeigen. Ihre Empfehlungen bleiben dabei verborgen; wer nicht mit
-              Ihnen befreundet ist, sieht auf Ihrem Profil den Hinweis, dass die Beiträge privat sind.
+              <strong>Profilangaben sind für alle angemeldeten Nutzer sichtbar.</strong> Das betrifft Ihren
+              Benutzernamen, Ihren angezeigten Namen, Ihr Profilbild, Ihre Kurzbeschreibung („Bio“) und die von Ihnen
+              angegebenen Instagram- und TikTok-Benutzernamen. Diese Angaben sind nicht auf Ihren Freundeskreis
+              beschränkt – nur so lassen sich Personen finden, Einladungen zuordnen und Urheberangaben anzeigen.
+              Kurzbeschreibung und Social-Media-Benutzernamen sind freiwillig und lassen sich in den Einstellungen
+              jederzeit wieder entfernen; solange sie hinterlegt sind, behandeln Sie sie bitte als öffentlich. Ihre
+              Empfehlungen bleiben dabei verborgen; wer nicht mit Ihnen befreundet ist, sieht auf Ihrem Profil den
+              Hinweis, dass die Beiträge privat sind.
+            </li>
+            <li>
+              <strong>Ihre Freundschaften sind nicht privat.</strong> Wer mit Ihnen befreundet ist, kann Ihre
+              vollständige Freundesliste einsehen. Wer es nicht ist, sieht auf Ihrem Profil die
+              <em> gemeinsamen</em> Freundinnen und Freunde – also genau die Personen, mit denen sowohl Sie als auch die
+              betrachtende Person befreundet sind. Wer mit niemandem aus Ihrem Freundeskreis befreundet ist, sieht an
+              dieser Stelle niemanden. Diese Anzeige ist der Zweck der Funktion: Sie soll einordnen helfen, wer Ihnen
+              eine Anfrage schickt. Umgekehrt heißt das, dass eine Freundschaft zwischen Ihnen und einer anderen Person
+              auch für Dritte erkennbar sein kann, sofern diese mit einer der beiden Personen befreundet sind.
             </li>
             <li>
               <strong>Reposts erweitern den Empfängerkreis.</strong> Gibt eine befreundete Person Ihre Empfehlung weiter,
@@ -383,7 +420,9 @@ export default function DatenschutzPage() {
             oder Ihr Profilbild, werden die zugehörigen Dateien aus dem Speicher entfernt; bereits an Endgeräte
             ausgelieferte Kopien in deren Zwischenspeichern (Caches) entziehen sich unserem Zugriff. IP-basierte
             Zwischenwerte im Server-Arbeitsspeicher werden nach höchstens einer Stunde verworfen. Einladungslinks verfallen
-            nach Ablauf der jeweiligen Gültigkeitsdauer. Push-Token werden beim Abmelden entfernt.
+            nach Ablauf der jeweiligen Gültigkeitsdauer. Push-Token werden beim Abmelden entfernt. Einträge zu
+            Entscheidungen über Inhalte bewahren wir auf, solange Ihr Konto besteht – sie sind der Nachweis, dass eine
+            Maßnahme begründet mitgeteilt wurde, und die Grundlage für einen Widerspruch.
           </p>
         </section>
 
