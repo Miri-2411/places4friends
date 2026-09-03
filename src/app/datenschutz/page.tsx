@@ -166,6 +166,21 @@ export default function DatenschutzPage() {
             werden nur Angaben, die ohnehin zum öffentlichen Profil gehören. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f
             DSGVO (berechtigtes Interesse an der Vernetzungsfunktion einer sozialen App).
           </p>
+          <p>
+            Wer noch niemanden kennt, bekäme auf diesem Weg gar keinen Vorschlag. Deshalb schlagen wir zusätzlich Konten
+            vor, mit denen Sie noch nichts verbindet. Dafür wertet unser Server aus, wie viele Empfehlungen ein Konto
+            veröffentlicht hat und wie viele Freundschaften es unterhält; berücksichtigt werden nur Konten mit
+            mindestens einer Empfehlung und bestätigter E-Mail-Adresse. <strong>Ihre Freundeszahl dient dabei
+            ausschließlich der Reihenfolge und wird niemandem angezeigt.</strong> Die Zahl Ihrer Empfehlungen steht
+            dagegen am Vorschlag, weil er sonst keine Begründung hätte. Sichtbar wird für die vorgeschlagene Person
+            damit, was ohnehin zum öffentlichen Profil gehört, und wie viele Empfehlungen sie veröffentlicht hat –
+            nicht welche und nicht wo. Die Reihenfolge wechselt täglich und unterscheidet sich von
+            Betrachter zu Betrachter, damit daraus keine Rangliste ablesbar ist. Ortsdaten werden dabei nicht
+            ausgewertet. <strong>Sie können dieser Verwendung jederzeit widersprechen</strong>, indem Sie in den
+            Einstellungen unter „Daten und Privatsphäre“ den Schalter „Vorschlägen erlauben“ ausschalten; Ihr Konto
+            erscheint dann nicht mehr in dieser Liste. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes
+            Interesse daran, dass ein neues Konto überhaupt Anschluss findet).
+          </p>
 
           <h4 className="font-semibold text-slate-800">Übernahme von Orten aus Google Maps</h4>
           <p>
@@ -249,7 +264,7 @@ export default function DatenschutzPage() {
           <p>
             places4friends ist keine öffentliche Plattform: Empfehlungen, Kommentare und Merklisten sind grundsätzlich
             nur für Sie und Ihre bestätigten Freundinnen und Freunde sichtbar. Diese Beschränkung wird serverseitig
-            durchgesetzt. Es gibt jedoch sechs Fälle, in denen Angaben darüber hinaus sichtbar werden, und wir halten
+            durchgesetzt. Es gibt jedoch sieben Fälle, in denen Angaben darüber hinaus sichtbar werden, und wir halten
             sie hier ausdrücklich fest:
           </p>
           <ul className="list-disc pl-5 space-y-1 text-xs">
@@ -299,6 +314,15 @@ export default function DatenschutzPage() {
               <strong>Hochgeladene Dateien liegen unter einer nicht öffentlich verlinkten Adresse.</strong> Wie in
               Abschnitt 3 beschrieben, kann jede Person eine Bilddatei abrufen, die deren vollständige URL kennt –
               unabhängig von einer Freundschaft und auch nach deren Ende.
+            </li>
+            <li>
+              <strong>Wie viele Empfehlungen Sie veröffentlicht haben, ist für alle angemeldeten Nutzer sichtbar.</strong>{" "}
+              Diese Zahl steht auf Ihrem Profil, und zwar unabhängig von einer Freundschaft. Die Empfehlungen selbst
+              bleiben dabei verborgen: Wer nicht mit Ihnen befreundet ist, sieht die Zahl, aber weder die Orte noch die
+              Beschreibungen oder Bilder dahinter. Haben Sie mindestens eine Empfehlung veröffentlicht, kann Ihr Profil
+              anderen außerdem als Vorschlag erscheinen, auch ohne gemeinsame Freundinnen und Freunde und ohne dass Sie
+              in deren Adressbuch stehen; wie Abschnitt 3 beschreibt, lässt sich <em>diese</em> Anzeige in den
+              Einstellungen abschalten. Die Zahl auf Ihrem Profil bleibt davon unberührt.
             </li>
             <li>
               <strong>Der Betreiber hat administrativen Zugriff</strong> zu Moderationszwecken; siehe Abschnitt 5.
