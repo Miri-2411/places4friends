@@ -62,7 +62,10 @@ export default function DatenschutzPage() {
           <h4 className="font-semibold text-slate-800">Registrierung und Profil</h4>
           <p>
             Bei der Registrierung verarbeiten wir Ihre E-Mail-Adresse, Ihren Namen (sofern angegeben), Ihren Benutzernamen
-            sowie Ihr Profilbild. Freiwillig können Sie Ihr Profil um eine Kurzbeschreibung und um je einen
+            sowie Ihr Profilbild. Der Benutzername ist verpflichtend, weil andere Nutzerinnen und Nutzer Sie darüber
+            finden und Einladungen zugeordnet werden; wenn Sie bei der Registrierung keinen angeben, erzeugen wir
+            automatisch einen aus Ihrem Namen beziehungsweise aus dem Teil Ihrer E-Mail-Adresse vor dem @-Zeichen.
+            Sie können ihn jederzeit in den Einstellungen ändern. Freiwillig können Sie Ihr Profil um eine Kurzbeschreibung und um je einen
             Instagram- und TikTok-Benutzernamen ergänzen. Diese Angaben speichern wir unverändert so, wie Sie sie
             eingeben; wir prüfen nicht, ob ein angegebenes Social-Media-Konto Ihnen gehört, und rufen die genannten
             Netzwerke nicht ab. Erst wenn jemand die Schaltfläche in Ihrem Profil antippt, öffnet dessen Gerät die
